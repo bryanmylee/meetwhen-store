@@ -1,16 +1,16 @@
 import { Length } from 'class-validator';
+import { Identifiable } from 'src/model/identifiable';
 import { Field, InputType, ObjectType } from 'type-graphql';
-import { Identifiable } from '../model/identifiable';
 
 @ObjectType()
-export class User extends Identifiable {
+export class Meeting extends Identifiable {
   @Field()
   name: string;
 }
 
 @InputType()
-export class NewUserInput {
+export class NewMeetingInput {
   @Field()
-  @Length(1, 30)
+  @Length(1, 50)
   name: string;
 }
