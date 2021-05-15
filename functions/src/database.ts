@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { Identifiable } from './model/identifiable';
+import { Identifiable } from './types/identifiable';
 
 export class Repo<T extends Identifiable> {
   constructor(protected repo: FirebaseFirestore.CollectionReference) {}

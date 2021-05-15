@@ -1,6 +1,6 @@
 import { Length } from 'class-validator';
 import { Field, InputType, ObjectType } from 'type-graphql';
-import { Identifiable } from '../model/identifiable';
+import { Identifiable } from '../types/identifiable';
 
 @ObjectType()
 export class User extends Identifiable {
