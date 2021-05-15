@@ -1,5 +1,5 @@
 import { Length } from 'class-validator';
-import { Identifiable } from 'src/types/identifiable';
+import { Identifiable } from '../types/identifiable';
 import { Field, InputType, ObjectType } from 'type-graphql';
 
 @ObjectType()

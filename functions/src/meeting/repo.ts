@@ -1,4 +1,4 @@
-import { database, Repo } from 'src/database';
+import { database, Repo } from '../database';
 import { Service } from 'typedi';
 import { Meeting, NewMeetingInput } from './types';
 

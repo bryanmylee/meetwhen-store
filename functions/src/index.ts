@@ -5,6 +5,7 @@ import * as functions from 'firebase-functions';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 import Container from 'typedi';
+import { MeetingResolver } from './meeting/resolver';
 import { UserResolver } from './user/resolver';
 
 const configureServer = async () => {
@@ -12,7 +13,7 @@ const configureServer = async () => {
   app.use(cors());
 
   const schema = await buildSchema({
-    resolvers: [UserResolver],
+    resolvers: [UserResolver, MeetingResolver],
     container: Container,
   });
 
