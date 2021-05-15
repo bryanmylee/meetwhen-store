@@ -9,7 +9,7 @@ export class User extends Identifiable {
 }
 
 @InputType()
-export class NewUserInput {
+export class NewUserInput implements Partial<User> {
   @Field()
   @Length(1, 30)
   name: string;

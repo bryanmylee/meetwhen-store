@@ -9,7 +9,7 @@ export class Meeting extends Identifiable {
 }
 
 @InputType()
-export class NewMeetingInput {
+export class NewMeetingInput implements Partial<Meeting> {
   @Field()
   @Length(1, 50)
   name: string;
