@@ -30,4 +30,5 @@ Class and interface names follow a certain convention for readability. Given the
 
 - `Meeting` defines the GraphQL schema type.
 - `MeetingEntry` defines the Firestore document type.
+  - Although each entry does not canonically have an `id` field in the database, we assign the document ID as `id`.
 - `...Input` defines the input types for GraphQL mututations. Each prefix should describe the mutation.
