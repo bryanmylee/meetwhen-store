@@ -8,6 +8,10 @@ export class User extends Identifiable {
   name: string;
 }
 
+export class UserEntry extends Identifiable {
+  name: string;
+}
+
 @InputType()
 export class NewUserInput implements Partial<User> {
   @Field()

@@ -1,9 +1,9 @@
 import { Service } from 'typedi';
 import { database, Repo } from '../database';
-import { NewUserInput, User } from './types';
+import { NewUserInput, UserEntry } from './types';
 
 @Service()
-export class UserRepo extends Repo<User> {
+export class UserRepo extends Repo<UserEntry> {
   constructor() {
     super(database.collection('user'));
   }
@@ -11,6 +11,6 @@ export class UserRepo extends Repo<User> {
   async addNew(newUser: NewUserInput) {
     const newRef = this.repo.doc();
     await newRef.set({ ...newUser });
-    return { ...newUser, id: newRef.id } as User;
+    return { ...newUser, id: newRef.id } as UserEntry;
   }
 }
