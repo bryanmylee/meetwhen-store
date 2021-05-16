@@ -14,7 +14,7 @@ import {
 import { Inject, Service } from 'typedi';
 import { UserService } from '../user/service';
 import { MeetingService } from './service';
-import { Meeting, MeetingEntry } from './types';
+import { Meeting } from './types';
 
 @InputType()
 class AddMeetingArgs implements Partial<Meeting> {
@@ -38,7 +38,7 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   }
 
   @FieldResolver()
-  async owner(@Root() meeting: MeetingEntry) {
+  async owner(@Root() meeting: Meeting) {
     if (meeting.ownerId === undefined) {
       throw new HttpsError('invalid-argument', `meeting(id=${meeting.id}) no owner`);
     }

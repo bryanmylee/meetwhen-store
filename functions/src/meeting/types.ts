@@ -9,6 +9,7 @@ export class Meeting extends Identifiable {
 
   @Field()
   owner?: User;
+  ownerId?: string;
 }
 
 export class MeetingEntry extends Identifiable {
