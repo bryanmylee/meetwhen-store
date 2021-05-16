@@ -40,7 +40,7 @@ interface Database {
       meetingId: string  // references meeting.id
       userId: string     // references user.id
       intervals: {
-        start: number
+        beg: number
         end: number
       }[]
     }
@@ -64,7 +64,7 @@ A nullable foreign key to the `User` entity exists for identifying the optional 
 
 ### `Schedule`
 
-Each `Schedule` represents an array of time intervals with a `start` and `end` in seconds since Epoch.
+Each `Schedule` represents an array of time intervals with a `beg` and `end` in seconds since Epoch.
 
 Each `Schedule` entity uniquely belongs to one many-to-many relationship between `User` and `Meeting`. Therefore, we can store `Schedule` interval information on the many-to-many relationship entity.
 
