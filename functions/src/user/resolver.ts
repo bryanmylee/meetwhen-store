@@ -1,7 +1,15 @@
-import { Arg, Mutation, Query, Resolver } from 'type-graphql';
+import { Length } from 'class-validator';
+import { Arg, Field, InputType, Mutation, Query, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 import { UserService } from './service';
-import { NewUserInput, User } from './types';
+import { User } from './types';
+
+@InputType()
+class AddUserArgs implements Partial<User> {
+  @Field()
+  @Length(1, 30)
+  name: string;
+}
 
 @Service()
 @Resolver(User)
@@ -15,7 +23,7 @@ export class UserResolver {
   }
 
   @Mutation((returns) => User)
-  async addUser(@Arg('data') data: NewUserInput) {
+  async addUser(@Arg('data') data: AddUserArgs) {
     return this.userService.addNew(data);
   }
 }

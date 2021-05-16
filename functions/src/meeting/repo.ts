@@ -1,6 +1,10 @@
 import { Service } from 'typedi';
 import { database, Repo } from '../database';
-import { MeetingEntry, NewMeetingInput } from './types';
+import { MeetingEntry } from './types';
+
+class AddNewArgs {
+  name: string;
+}
 
 @Service()
 export class MeetingRepo extends Repo<MeetingEntry> {
@@ -8,7 +12,7 @@ export class MeetingRepo extends Repo<MeetingEntry> {
     super(database.collection('meeting'));
   }
 
-  async addNew(newMeeting: NewMeetingInput) {
+  async addNew(newMeeting: AddNewArgs) {
     const newRef = this.repo.doc();
     await newRef.set({ ...newMeeting });
     return { ...newMeeting, id: newRef.id } as MeetingEntry;

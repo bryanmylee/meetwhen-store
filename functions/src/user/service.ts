@@ -1,6 +1,9 @@
 import { Inject, Service } from 'typedi';
 import { UserRepo } from './repo';
-import { NewUserInput } from './types';
+
+class AddNewArgs {
+  name: string;
+}
 
 @Service()
 export class UserService {
@@ -11,7 +14,7 @@ export class UserService {
     return this.repo.findById(id);
   }
 
-  async addNew(newUser: NewUserInput) {
+  async addNew(newUser: AddNewArgs) {
     return this.repo.addNew(newUser);
   }
 }

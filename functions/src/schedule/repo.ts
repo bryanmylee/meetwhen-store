@@ -3,6 +3,11 @@ import { Service } from 'typedi';
 import { database, Repo } from '../database';
 import { ScheduleEntry } from './types';
 
+class FindByMeetingUserArgs {
+  meetingId: string;
+  userId: string;
+}
+
 @Service()
 export class ScheduleRepo extends Repo<ScheduleEntry> {
   constructor() {
@@ -28,9 +33,4 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
     const doc = results.docs[0];
     return { ...doc.data(), id: doc.id };
   }
-}
-
-export class FindByMeetingUserArgs {
-  meetingId: string;
-  userId: string;
 }

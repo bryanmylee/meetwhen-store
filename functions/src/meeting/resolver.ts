@@ -1,7 +1,10 @@
+import { Length } from 'class-validator';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import {
   Arg,
+  Field,
   FieldResolver,
+  InputType,
   Mutation,
   Query,
   Resolver,
@@ -11,7 +14,14 @@ import {
 import { Inject, Service } from 'typedi';
 import { UserService } from '../user/service';
 import { MeetingService } from './service';
-import { Meeting, MeetingEntry, NewMeetingInput } from './types';
+import { Meeting, MeetingEntry } from './types';
+
+@InputType()
+class AddMeetingArgs implements Partial<Meeting> {
+  @Field()
+  @Length(1, 50)
+  name: string;
+}
 
 @Service()
 @Resolver(Meeting)
@@ -37,7 +47,7 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
 
   // TODO: Get owner id from context.
   @Mutation((returns) => Meeting)
-  async addMeeting(@Arg('data') data: NewMeetingInput) {
+  async addMeeting(@Arg('data') data: AddMeetingArgs) {
     return this.meetingService.addNew(data);
   }
 }

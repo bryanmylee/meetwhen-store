@@ -1,6 +1,9 @@
 import { Inject, Service } from 'typedi';
 import { MeetingRepo } from './repo';
-import { NewMeetingInput } from './types';
+
+class AddNewArgs {
+  name: string;
+}
 
 @Service()
 export class MeetingService {
@@ -11,7 +14,7 @@ export class MeetingService {
     return this.repo.findById(id);
   }
 
-  async addNew(newMeeting: NewMeetingInput) {
+  async addNew(newMeeting: AddNewArgs) {
     return this.repo.addNew(newMeeting);
   }
 }
