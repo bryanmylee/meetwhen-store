@@ -6,6 +6,7 @@ import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 import Container from 'typedi';
 import { MeetingResolver } from './meeting/resolver';
+import { ScheduleResolver } from './schedule/resolver';
 import { UserResolver } from './user/resolver';
 
 const configureServer = async () => {
@@ -13,7 +14,7 @@ const configureServer = async () => {
   app.use(cors());
 
   const schema = await buildSchema({
-    resolvers: [UserResolver, MeetingResolver],
+    resolvers: [UserResolver, MeetingResolver, ScheduleResolver],
     container: Container,
   });
 

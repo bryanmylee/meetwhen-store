@@ -31,6 +31,6 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
       );
     }
     const doc = results.docs[0];
-    return { ...doc.data(), id: doc.id };
+    return { ...doc.data(), id: doc.id } as ScheduleEntry;
   }
 }
