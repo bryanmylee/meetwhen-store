@@ -1,6 +1,6 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { PasswordService } from '../password/service';
 import { Inject, Service } from 'typedi';
+import { PasswordService } from '../password/service';
 import { UserRepo } from './repo';
 
 class AddNewArgs {
@@ -13,7 +13,7 @@ class AddNewArgs {
 export class UserService {
   @Inject()
   private repo: UserRepo;
-  
+
   @Inject()
   private passwordService: PasswordService;
 

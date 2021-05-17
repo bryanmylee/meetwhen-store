@@ -8,12 +8,13 @@ import { buildSchema } from 'type-graphql';
 import Container from 'typedi';
 import { MeetingResolver } from './meeting/resolver';
 import { ScheduleResolver } from './schedule/resolver';
+import { TokenService } from './token/service';
 import { UserResolver } from './user/resolver';
 
 const configureServer = async () => {
   const app = express();
   app.use(cors());
-  app.use(cookieParser())
+  app.use(cookieParser());
 
   const schema = await buildSchema({
     resolvers: [UserResolver, MeetingResolver, ScheduleResolver],
@@ -23,12 +24,13 @@ const configureServer = async () => {
   const apolloServer = new ApolloServer({
     schema,
     context: ({ res, req }) => {
+      const principal = req.cookies.__session
+        ? Container.get(TokenService).verifyAccessToken(req.cookies.__session)
+        : {};
       return {
         res,
         req,
-        user: {
-          name: 'Bryan'
-        },
+        principal,
       };
     },
   });

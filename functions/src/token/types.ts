@@ -1,3 +1,3 @@
-export class JWTPayload {
+export class Principal {
   uid: string;
 }

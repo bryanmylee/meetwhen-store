@@ -26,7 +26,7 @@ export class UserRepo extends Repo<UserEntry> {
   async deleteById(id: string) {
     return this.repo.doc(id).delete();
   }
-  
+
   async exists({ email }: ExistsArgs) {
     const queried = await this.repo.where('email', '==', email).get();
     return queried.docs.length > 0;

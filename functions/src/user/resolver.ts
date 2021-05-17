@@ -1,8 +1,8 @@
 import { Length } from 'class-validator';
 import { Response } from 'express';
-import { TokenService } from '../token/service';
 import { Arg, Ctx, Field, InputType, Mutation, Query, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
+import { TokenService } from '../token/service';
 import { UserService } from './service';
 import { User } from './types';
 
@@ -25,7 +25,7 @@ class AddUserArgs implements Partial<User> {
 export class UserResolver {
   @Inject()
   private userService: UserService;
-  
+
   @Inject()
   private tokenService: TokenService;
 
@@ -37,7 +37,7 @@ export class UserResolver {
   @Mutation((returns) => User)
   async addUser(@Arg('data') data: AddUserArgs, @Ctx('res') res: Response) {
     const newUser = await this.userService.addNew(data);
-    const token = await this.tokenService.createAccessToken(newUser.id);
+    const token = this.tokenService.createAccessToken(newUser.id);
     res.setHeader('cache-control', 'private');
     res.cookie('__session', token, { httpOnly: true });
   }

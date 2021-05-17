@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { Service } from "typedi";
+import { Service } from 'typedi';
 
 const SALT_LENGTH = 12;
 
