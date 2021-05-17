@@ -1,7 +1,6 @@
 // create a .runtimeconfig.json to set local environment variables for development
 {
   "api": {
-    "access_secret": "",
-    "refresh_secret": ""
+    "project_id": ""
   }
 }

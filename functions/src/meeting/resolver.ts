@@ -1,5 +1,6 @@
 import { Length } from 'class-validator';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
+import { Principal } from '../security/context';
 import {
   Arg,
   Ctx,
@@ -34,8 +35,8 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   private userService: UserService;
 
   @Query((returns) => Meeting)
-  async meeting(@Arg('id') id: string, @Ctx('user') user: { name: string }) {
-    console.log(user);
+  async meeting(@Arg('id') id: string, @Ctx('principal') principal: Principal) {
+    console.log(principal);
     return this.meetingService.findById(id);
   }
 

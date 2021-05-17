@@ -13,5 +13,4 @@ export class User extends Identifiable {
 export class UserEntry extends Identifiable {
   name: string;
   email: string;
-  hash: string;
 }

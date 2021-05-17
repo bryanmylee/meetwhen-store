@@ -1,8 +1,9 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
+import { firebaseAdmin } from '../firebase/setup';
+import { auth } from '../firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Inject, Service } from 'typedi';
-import { PasswordService } from '../security/password-service';
 import { UserRepo } from './repo';
-import { UserEntry } from './types';
 
 class AddNewArgs {
   name: string;
@@ -20,27 +21,28 @@ export class UserService {
   @Inject()
   private repo: UserRepo;
 
-  @Inject()
-  private passwordService: PasswordService;
-
   async findById(id: string) {
     return this.repo.findById(id);
   }
 
   async addNew({ name, email, password }: AddNewArgs) {
-    if (await this.repo.exists({ email })) {
+    const entry = await this.repo.addNew({ name, email });
+    try {
+      await firebaseAdmin.auth().createUser({
+        uid: entry.id,
+        displayName: name,
+        email,
+        password: password,
+      });
+    } catch (error) {
+      this.repo.deleteById(entry.id);
       throw new HttpsError('already-exists', `user(email=${email} already exists)`);
     }
-    const newHash = await this.passwordService.generateHash(password);
-    const { hash, ...user } = await this.repo.addNew({ name, email, hash: newHash });
-    return user as Omit<UserEntry, 'hash'>;
+    return entry;
   }
 
   async login({ email, password }: LoginArgs) {
-    const { hash, ...user } = await this.repo.findByEmail(email);
-    if (!(await this.passwordService.verifyPassword(password, hash))) {
-      throw new HttpsError('invalid-argument', `invalid password`);
-    }
-    return user as Omit<UserEntry, 'hash'>;
+    const { user } = await signInWithEmailAndPassword(auth, email, password);
+    return user;
   }
 }

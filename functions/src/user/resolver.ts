@@ -2,7 +2,6 @@ import { Length } from 'class-validator';
 import { Response } from 'express';
 import { Arg, Ctx, Field, InputType, Mutation, Query, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
-import { TokenService } from '../token/service';
 import { UserService } from './service';
 import { User } from './types';
 
@@ -36,9 +35,6 @@ export class UserResolver {
   @Inject()
   private userService: UserService;
 
-  @Inject()
-  private tokenService: TokenService;
-
   @Query((returns) => User)
   async user(@Arg('id') id: string) {
     return this.userService.findById(id);
@@ -46,19 +42,20 @@ export class UserResolver {
 
   @Mutation((returns) => User)
   async addUser(@Arg('data') data: AddUserArgs, @Ctx('res') res: Response) {
-    const newUser = await this.userService.addNew(data);
-    const token = this.tokenService.createAccessToken(newUser.id);
-    res.setHeader('cache-control', 'private');
-    res.cookie('__session', token, { httpOnly: true });
-    return newUser;
+    await this.userService.addNew(data);
+    return this.login(data, res);
   }
 
   @Mutation((returns) => User)
   async login(@Arg('data') data: LoginArgs, @Ctx('res') res: Response) {
     const user = await this.userService.login(data);
-    const token = this.tokenService.createAccessToken(user.id);
+    const token = await user.getIdToken();
     res.setHeader('cache-control', 'private');
     res.cookie('__session', token, { httpOnly: true });
-    return user;
+    return {
+      id: user.uid,
+      name: user.displayName,
+      email: user.email,
+    } as User;
   }
 }

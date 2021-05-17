@@ -1,12 +1,12 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Identifiable } from '../types/identifiable';
-import { firestore } from './firebase';
+import { firebaseAdmin } from './setup';
 
 export class Repo<T extends Identifiable> {
   protected repo: FirebaseFirestore.CollectionReference;
 
   constructor(collectionId: string) {
-    this.repo = firestore.collection(collectionId);
+    this.repo = firebaseAdmin.firestore().collection(collectionId);
   }
 
   async findById(id: string) {
