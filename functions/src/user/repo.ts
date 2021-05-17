@@ -32,7 +32,7 @@ export class UserRepo extends Repo<UserEntry> {
     const results = await this.repo.where('email', '==', email).get();
     return results.docs.length > 0;
   }
-  
+
   async findByEmail(email: string) {
     const results = await this.repo.where('email', '==', email).get();
     if (results.docs.length > 1) {

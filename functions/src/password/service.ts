@@ -8,7 +8,7 @@ export class PasswordService {
   async generateHash(password: string) {
     return bcrypt.hash(password, SALT_LENGTH);
   }
-  
+
   async verifyPassword(password: string, hash: string) {
     return bcrypt.compare(password, hash);
   }

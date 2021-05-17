@@ -35,10 +35,10 @@ export class UserService {
     const { hash, ...user } = await this.repo.addNew({ name, email, hash: newHash });
     return user as Omit<UserEntry, 'hash'>;
   }
-  
+
   async login({ email, password }: LoginArgs) {
     const { hash, ...user } = await this.repo.findByEmail(email);
-    if (!await this.passwordService.verifyPassword(password, hash)) {
+    if (!(await this.passwordService.verifyPassword(password, hash))) {
       throw new HttpsError('invalid-argument', `invalid password`);
     }
     return user as Omit<UserEntry, 'hash'>;

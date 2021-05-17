@@ -52,7 +52,7 @@ export class UserResolver {
     res.cookie('__session', token, { httpOnly: true });
     return newUser;
   }
-  
+
   @Mutation((returns) => User)
   async login(@Arg('data') data: LoginArgs, @Ctx('res') res: Response) {
     const user = await this.userService.login(data);
