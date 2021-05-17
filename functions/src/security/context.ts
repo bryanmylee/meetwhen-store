@@ -7,8 +7,10 @@ export type Principal = auth.DecodedIdToken | null;
 export type Context = ExpressContext & { principal: Principal };
 
 export const context: ContextFunction<ExpressContext, object> = async ({ req, res }) => {
-  const principal: Principal = req.cookies.__session
-    ? await firebaseAdmin.auth().verifyIdToken(req.cookies.__session)
-    : null;
-  return { req, res, principal } as Context;
+  try {
+    const principal: Principal = await firebaseAdmin.auth().verifyIdToken(req.cookies.__session);
+    return { req, res, principal } as Context;
+  } catch (error) {
+    return { req, res, principal: null } as Context;
+  }
 };
