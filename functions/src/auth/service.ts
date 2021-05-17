@@ -27,7 +27,11 @@ class LoginOutput {
 @Service()
 export class AuthService {
   async login({ email, password }: LoginArgs) {
-    const res = await axios.post(SIGN_IN_WITH_PASSWORD_ENDPOINT, { email, password });
-    return res.data as LoginOutput;
+    try {
+      const response = await axios.post(SIGN_IN_WITH_PASSWORD_ENDPOINT, { email, password });
+      return response.data as LoginOutput;
+    } catch ({ response }) {
+      throw response.data.error;
+    }
   }
 }

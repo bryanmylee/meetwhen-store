@@ -9,10 +9,14 @@ const authService = Container.get(AuthService);
 
 authController.post('/login', async (req, res) => {
   const { email, password } = req.body as LoginBody;
-  const { idToken } = await authService.login({ email, password });
-  res.setHeader('cache-control', 'private');
-  res.cookie('__session', idToken, {
-    httpOnly: true,
-  });
-  res.send();
+  try {
+    const { idToken } = await authService.login({ email, password });
+    res.setHeader('cache-control', 'private');
+    res.cookie('__session', idToken, {
+      httpOnly: true,
+    });
+    res.send();
+  } catch (error) {
+    res.send(error);
+  }
 });
