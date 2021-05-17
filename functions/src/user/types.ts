@@ -5,8 +5,12 @@ import { Identifiable } from '../types/identifiable';
 export class User extends Identifiable {
   @Field()
   name: string;
+
+  @Field()
+  email: string;
 }
 
 export class UserEntry extends Identifiable {
   name: string;
+  email: string;
 }

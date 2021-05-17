@@ -1,3 +1,4 @@
+import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Inject, Service } from 'typedi';
 import { auth } from '../firebase/firebase';
 import { UserRepo } from './repo';
@@ -18,12 +19,18 @@ export class UserService {
   }
 
   async addNew({ name, email, password }: AddNewArgs) {
-    const { id } = await this.repo.addNew({ name });
-    auth.createUser({
-      uid: id,
-      displayName: name,
-      email,
-      password,
-    });
+    const entry = await this.repo.addNew({ name, email });
+    try {
+      await auth.createUser({
+        uid: entry.id,
+        displayName: name,
+        email,
+        password,
+      });
+      return entry;
+    } catch (error) {
+      await this.repo.deleteById(entry.id);
+      throw new HttpsError('already-exists', `user(email=${email} already exists)`);
+    }
   }
 }

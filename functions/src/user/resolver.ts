@@ -9,7 +9,7 @@ class AddUserArgs implements Partial<User> {
   @Field()
   @Length(3, 30)
   name: string;
-  
+
   @Field()
   email: string;
 
