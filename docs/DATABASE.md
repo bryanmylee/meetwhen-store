@@ -27,6 +27,7 @@ interface Database {
   user: {
     [id: string]: {
       name: string
+      email: string
     }
   }
   meeting: {
