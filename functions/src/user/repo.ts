@@ -1,5 +1,5 @@
 import { Service } from 'typedi';
-import { database, Repo } from '../database';
+import { Repo } from '../firebase/database';
 import { UserEntry } from './types';
 
 class AddNewArgs {
@@ -9,7 +9,7 @@ class AddNewArgs {
 @Service()
 export class UserRepo extends Repo<UserEntry> {
   constructor() {
-    super(database.collection('user'));
+    super('user');
   }
 
   async addNew(newUser: AddNewArgs) {

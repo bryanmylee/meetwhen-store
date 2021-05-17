@@ -1,9 +1,18 @@
 import * as admin from 'firebase-admin';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { Identifiable } from './types/identifiable';
+import { Identifiable } from '../types/identifiable';
+
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+});
+
+const database = admin.firestore();
 
 export class Repo<T extends Identifiable> {
-  constructor(protected repo: FirebaseFirestore.CollectionReference) {}
+  protected repo: FirebaseFirestore.CollectionReference;
+  constructor(collectionId: string) {
+    this.repo = database.collection(collectionId);
+  }
 
   async findById(id: string) {
     const ref = this.repo.doc(id);
@@ -15,9 +24,3 @@ export class Repo<T extends Identifiable> {
     return { ...data, id } as T;
   }
 }
-
-admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-});
-
-export const database = admin.firestore();

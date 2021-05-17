@@ -1,6 +1,6 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Service } from 'typedi';
-import { database, Repo } from '../database';
+import { Repo } from '../firebase/database';
 import { ScheduleEntry } from './types';
 
 class FindByMeetingUserArgs {
@@ -11,7 +11,7 @@ class FindByMeetingUserArgs {
 @Service()
 export class ScheduleRepo extends Repo<ScheduleEntry> {
   constructor() {
-    super(database.collection('schedule'));
+    super('schedule');
   }
 
   async findByMeetingUser({ meetingId, userId }: FindByMeetingUserArgs) {
