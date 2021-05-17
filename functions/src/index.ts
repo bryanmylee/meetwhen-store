@@ -6,7 +6,7 @@ import * as functions from 'firebase-functions';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 import Container from 'typedi';
-import { authController } from './auth/controller';
+import { AuthResolver } from './auth/resolver';
 import { AuthService } from './auth/service';
 import { MeetingResolver } from './meeting/resolver';
 import { ScheduleResolver } from './schedule/resolver';
@@ -16,10 +16,9 @@ const configureServer = async () => {
   const app = express();
   app.use(cors());
   app.use(cookieParser())
-  app.use(authController);
 
   const schema = await buildSchema({
-    resolvers: [UserResolver, MeetingResolver, ScheduleResolver],
+    resolvers: [AuthResolver, UserResolver, MeetingResolver, ScheduleResolver],
     container: Container,
   });
 

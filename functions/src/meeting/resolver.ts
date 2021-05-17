@@ -1,5 +1,4 @@
 import { Length } from 'class-validator';
-import { Response } from 'express';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import {
   Arg,
@@ -35,9 +34,8 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   private userService: UserService;
 
   @Query((returns) => Meeting)
-  async meeting(@Arg('id') id: string, @Ctx('user') user: { name: string }, @Ctx('res') res: Response) {
+  async meeting(@Arg('id') id: string, @Ctx('user') user: { name: string }) {
     console.log(user);
-    res.cookie('meeting', 'you got here!!', { httpOnly: true });
     return this.meetingService.findById(id);
   }
 
