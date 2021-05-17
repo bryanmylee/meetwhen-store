@@ -1,12 +1,10 @@
-import { Length } from 'class-validator';
 import { Inject, Service } from 'typedi';
+import { auth } from '../firebase/firebase';
 import { UserRepo } from './repo';
 
 class AddNewArgs {
-  @Length(1, 30)
   name: string;
-  
-  @Length(4, 30)
+  email: string;
   password: string;
 }
 
@@ -19,7 +17,13 @@ export class UserService {
     return this.repo.findById(id);
   }
 
-  async addNew(newUser: AddNewArgs) {
-    return this.repo.addNew(newUser);
+  async addNew({ name, email, password }: AddNewArgs) {
+    const { id } = await this.repo.addNew({ name });
+    auth.createUser({
+      uid: id,
+      displayName: name,
+      email,
+      password,
+    });
   }
 }
