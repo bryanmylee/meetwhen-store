@@ -14,7 +14,7 @@ export class Repo<T extends Identifiable> {
     const doc = await ref.get();
     const data = doc.data() as any;
     if (data === undefined) {
-      throw new HttpsError('not-found', `user(id=${id}) not found`);
+      throw new HttpsError('not-found', `meeting(id=${id}) not found`);
     }
     return { ...data, id } as T;
   }
