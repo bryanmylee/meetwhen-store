@@ -1,4 +1,3 @@
-import { Length } from 'class-validator';
 import { Arg, Field, InputType, Mutation, Query, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 import { UserService } from './service';
@@ -7,8 +6,10 @@ import { User } from './types';
 @InputType()
 class AddUserArgs implements Partial<User> {
   @Field()
-  @Length(1, 30)
   name: string;
+  
+  @Field()
+  password: string;
 }
 
 @Service()

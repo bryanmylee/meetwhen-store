@@ -1,7 +1,9 @@
+import { Length } from 'class-validator';
 import { Inject, Service } from 'typedi';
 import { MeetingRepo } from './repo';
 
 class AddNewArgs {
+  @Length(1, 50)
   name: string;
 }
 

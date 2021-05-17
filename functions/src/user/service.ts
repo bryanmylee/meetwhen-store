@@ -1,8 +1,13 @@
+import { Length } from 'class-validator';
 import { Inject, Service } from 'typedi';
 import { UserRepo } from './repo';
 
 class AddNewArgs {
+  @Length(1, 30)
   name: string;
+  
+  @Length(4, 30)
+  password: string;
 }
 
 @Service()

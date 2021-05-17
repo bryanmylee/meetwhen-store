@@ -1,4 +1,3 @@
-import { Length } from 'class-validator';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import {
   Arg,
@@ -19,7 +18,6 @@ import { Meeting } from './types';
 @InputType()
 class AddMeetingArgs implements Partial<Meeting> {
   @Field()
-  @Length(1, 50)
   name: string;
 }
 
