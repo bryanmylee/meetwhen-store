@@ -8,6 +8,7 @@ import { buildSchema } from 'type-graphql';
 import Container from 'typedi';
 import { MeetingResolver } from './meeting/resolver';
 import { ScheduleResolver } from './schedule/resolver';
+import { authChecker } from './security/auth-checker';
 import { context } from './security/context';
 import { UserResolver } from './user/resolver';
 
@@ -17,6 +18,7 @@ const configureServer = async () => {
   app.use(cookieParser());
 
   const schema = await buildSchema({
+    authChecker,
     resolvers: [UserResolver, MeetingResolver, ScheduleResolver],
     container: Container,
   });
