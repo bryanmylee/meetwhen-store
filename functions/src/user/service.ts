@@ -1,6 +1,6 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Inject, Service } from 'typedi';
-import { PasswordService } from '../password/service';
+import { PasswordService } from '../security/password-service';
 import { UserRepo } from './repo';
 import { UserEntry } from './types';
 

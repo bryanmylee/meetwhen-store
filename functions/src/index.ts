@@ -8,7 +8,7 @@ import { buildSchema } from 'type-graphql';
 import Container from 'typedi';
 import { MeetingResolver } from './meeting/resolver';
 import { ScheduleResolver } from './schedule/resolver';
-import { TokenService } from './token/service';
+import { context } from './security/context';
 import { UserResolver } from './user/resolver';
 
 const configureServer = async () => {
@@ -23,16 +23,7 @@ const configureServer = async () => {
 
   const apolloServer = new ApolloServer({
     schema,
-    context: ({ res, req }) => {
-      const principal = req.cookies.__session
-        ? Container.get(TokenService).verifyAccessToken(req.cookies.__session)
-        : {};
-      return {
-        res,
-        req,
-        principal,
-      };
-    },
+    context,
   });
 
   apolloServer.applyMiddleware({ app });
