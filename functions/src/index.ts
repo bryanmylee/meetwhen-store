@@ -8,10 +8,12 @@ import Container from 'typedi';
 import { MeetingResolver } from './meeting/resolver';
 import { ScheduleResolver } from './schedule/resolver';
 import { UserResolver } from './user/resolver';
+import { authController } from './auth/controller';
 
 const configureServer = async () => {
   const app = express();
   app.use(cors());
+  app.use(authController);
 
   const schema = await buildSchema({
     resolvers: [UserResolver, MeetingResolver, ScheduleResolver],

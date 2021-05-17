@@ -9,6 +9,11 @@ class AddNewArgs {
   password: string;
 }
 
+class LoginArgs {
+  email: string;
+  password: string;
+}
+
 @Service()
 export class UserService {
   @Inject()
@@ -17,7 +22,7 @@ export class UserService {
   async findById(id: string) {
     return this.repo.findById(id);
   }
-
+  
   async addNew({ name, email, password }: AddNewArgs) {
     const entry = await this.repo.addNew({ name, email });
     try {
@@ -32,5 +37,9 @@ export class UserService {
       await this.repo.deleteById(entry.id);
       throw new HttpsError('already-exists', `user(email=${email} already exists)`);
     }
+  }
+  
+  async getTokenForUserWithUid(uid: string) {
+    return auth.createCustomToken(uid);
   }
 }
