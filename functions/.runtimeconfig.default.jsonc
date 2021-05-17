@@ -1,0 +1,7 @@
+// create a .runtimeconfig.json to set local environment variables for development
+{
+  "api": {
+    // get from firebase console > project settings
+    "web_api_key": ""
+  }
+}

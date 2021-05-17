@@ -5,10 +5,10 @@ import * as functions from 'firebase-functions';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 import Container from 'typedi';
+import { authController } from './auth/controller';
 import { MeetingResolver } from './meeting/resolver';
 import { ScheduleResolver } from './schedule/resolver';
 import { UserResolver } from './user/resolver';
-import { authController } from './auth/controller';
 
 const configureServer = async () => {
   const app = express();

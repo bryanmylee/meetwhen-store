@@ -1,11 +1,18 @@
 import { Router } from 'express';
+import { Container } from 'typedi';
+import { AuthService } from './service';
 import { LoginBody } from './types';
 
 export const authController = Router();
 
-authController.post('/login', (req, res, next) => {
-  console.log('accessed login route');
+const authService = Container.get(AuthService);
+
+authController.post('/login', async (req, res) => {
   const { email, password } = req.body as LoginBody;
-  console.log({ email, password });
-  res.send(200);
-})
+  const { idToken } = await authService.login({ email, password });
+  res.setHeader('cache-control', 'private');
+  res.cookie('__session', idToken, {
+    httpOnly: true,
+  });
+  res.send();
+});
