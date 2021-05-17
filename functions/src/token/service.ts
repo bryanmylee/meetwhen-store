@@ -12,13 +12,13 @@ export class TokenService {
     });
   }
 
-  verifyAccessToken(token: string) {
+  verifyAccessToken(token: string): Principal | null {
     try {
       return jwt.verify(token, config.accessSecret) as Principal;
     } catch (error) {
       const jwtError = error as JsonWebTokenError;
-      console.log(jwtError.message);
-      return {};
+      console.warn(jwtError.message);
+      return null;
     }
   }
 }
