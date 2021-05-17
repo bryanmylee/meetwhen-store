@@ -1,4 +1,5 @@
 import { ApolloServer } from 'apollo-server-express';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import * as functions from 'firebase-functions';
@@ -6,6 +7,7 @@ import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 import Container from 'typedi';
 import { authController } from './auth/controller';
+import { AuthService } from './auth/service';
 import { MeetingResolver } from './meeting/resolver';
 import { ScheduleResolver } from './schedule/resolver';
 import { UserResolver } from './user/resolver';
@@ -13,6 +15,7 @@ import { UserResolver } from './user/resolver';
 const configureServer = async () => {
   const app = express();
   app.use(cors());
+  app.use(cookieParser())
   app.use(authController);
 
   const schema = await buildSchema({
@@ -20,7 +23,19 @@ const configureServer = async () => {
     container: Container,
   });
 
-  const apolloServer = new ApolloServer({ schema });
+  const apolloServer = new ApolloServer({
+    schema,
+    context: ({ res, req }) => {
+      Container.get(AuthService).verifyIdToken(req);
+      return {
+        res,
+        req,
+        user: {
+          name: 'Bryan'
+        },
+      };
+    },
+  });
 
   apolloServer.applyMiddleware({ app });
 

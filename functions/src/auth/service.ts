@@ -1,6 +1,8 @@
 import axios from 'axios';
+import { Request } from 'express';
 import { Service } from 'typedi';
 import { config } from '../config';
+// import { auth } from '../firebase/firebase';
 
 const SIGN_IN_WITH_PASSWORD_ENDPOINT = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${config.webAPIKey}`;
 
@@ -33,5 +35,14 @@ export class AuthService {
     } catch ({ response }) {
       throw response.data.error;
     }
+  }
+  
+  async verifyIdToken({ cookies, headers }: Request) {
+    console.log('verifying');
+    // console.log(headers, cookies);
+    // if (headers.authorization) {
+    //   return auth.verifyIdToken(headers.authorization.replace(/^Bearer\s/, ''));
+    // }
+    return {};
   }
 }
