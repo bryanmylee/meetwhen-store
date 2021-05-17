@@ -1,8 +1,8 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { firebaseAdmin } from '../firebase/setup';
-import { auth } from '../firebase/auth';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Inject, Service } from 'typedi';
+import { auth } from '../firebase/auth';
+import { firebaseAdmin } from '../firebase/setup';
 import { UserRepo } from './repo';
 
 class AddNewArgs {

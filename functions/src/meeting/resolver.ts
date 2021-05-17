@@ -1,6 +1,5 @@
 import { Length } from 'class-validator';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { Principal } from '../security/context';
 import {
   Arg,
   Ctx,
@@ -14,6 +13,7 @@ import {
   Root,
 } from 'type-graphql';
 import { Inject, Service } from 'typedi';
+import { Principal } from '../security/context';
 import { UserService } from '../user/service';
 import { MeetingService } from './service';
 import { Meeting } from './types';

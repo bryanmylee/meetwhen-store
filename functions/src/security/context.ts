@@ -1,7 +1,7 @@
-import { ExpressContext } from 'apollo-server-express';
 import { ContextFunction } from 'apollo-server-core';
-import { firebaseAdmin } from '../firebase/setup';
+import { ExpressContext } from 'apollo-server-express';
 import { auth } from 'firebase-admin';
+import { firebaseAdmin } from '../firebase/setup';
 
 export type Principal = auth.DecodedIdToken | null;
 export type Context = ExpressContext & { principal: Principal };
