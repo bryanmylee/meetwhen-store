@@ -24,7 +24,8 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
         'internal',
         `schedule(meetingId=${meetingId}, userId=${userId}) not unique`
       );
-    } else if (results.docs.length === 0) {
+    }
+    if (results.docs.length === 0) {
       throw new HttpsError(
         'not-found',
         `schedule(meetingId=${meetingId}, userId=${userId}) not found`

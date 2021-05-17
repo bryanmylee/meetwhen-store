@@ -20,6 +20,16 @@ class AddUserArgs implements Partial<User> {
   password: string;
 }
 
+@InputType()
+class LoginArgs implements Partial<User> {
+  @Field()
+  email: string;
+
+  @Field()
+  @Length(6, 30)
+  password: string;
+}
+
 @Service()
 @Resolver(User)
 export class UserResolver {
@@ -40,5 +50,15 @@ export class UserResolver {
     const token = this.tokenService.createAccessToken(newUser.id);
     res.setHeader('cache-control', 'private');
     res.cookie('__session', token, { httpOnly: true });
+    return newUser;
+  }
+  
+  @Mutation((returns) => User)
+  async login(@Arg('data') data: LoginArgs, @Ctx('res') res: Response) {
+    const user = await this.userService.login(data);
+    const token = this.tokenService.createAccessToken(user.id);
+    res.setHeader('cache-control', 'private');
+    res.cookie('__session', token, { httpOnly: true });
+    return user;
   }
 }
