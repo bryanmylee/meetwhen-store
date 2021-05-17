@@ -1,6 +1,6 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Service } from 'typedi';
-import { Repo } from '../firebase/database';
+import { Repo } from '../firebase/repo';
 import { ScheduleEntry } from './types';
 
 class FindByMeetingUserArgs {

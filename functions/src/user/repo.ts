@@ -1,5 +1,5 @@
 import { Service } from 'typedi';
-import { Repo } from '../firebase/database';
+import { Repo } from '../firebase/repo';
 import { UserEntry } from './types';
 
 class AddNewArgs {
