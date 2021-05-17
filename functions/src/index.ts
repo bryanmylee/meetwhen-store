@@ -6,8 +6,6 @@ import * as functions from 'firebase-functions';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 import Container from 'typedi';
-import { AuthResolver } from './auth/resolver';
-import { AuthService } from './auth/service';
 import { MeetingResolver } from './meeting/resolver';
 import { ScheduleResolver } from './schedule/resolver';
 import { UserResolver } from './user/resolver';
@@ -18,14 +16,13 @@ const configureServer = async () => {
   app.use(cookieParser())
 
   const schema = await buildSchema({
-    resolvers: [AuthResolver, UserResolver, MeetingResolver, ScheduleResolver],
+    resolvers: [UserResolver, MeetingResolver, ScheduleResolver],
     container: Container,
   });
 
   const apolloServer = new ApolloServer({
     schema,
     context: ({ res, req }) => {
-      Container.get(AuthService).verifyIdToken(req);
       return {
         res,
         req,

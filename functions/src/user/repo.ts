@@ -5,6 +5,11 @@ import { UserEntry } from './types';
 class AddNewArgs {
   name: string;
   email: string;
+  hash: string;
+}
+
+class ExistsArgs {
+  email: string;
 }
 
 @Service()
@@ -13,13 +18,17 @@ export class UserRepo extends Repo<UserEntry> {
     super('user');
   }
 
-  async addNew(newUser: AddNewArgs) {
-    const newRef = this.repo.doc();
-    await newRef.set({ ...newUser });
-    return { ...newUser, id: newRef.id } as UserEntry;
+  async addNew({ name, email, hash }: AddNewArgs) {
+    const newRef = await this.repo.add({ name, email, hash });
+    return { id: newRef.id, name, email } as Omit<UserEntry, 'hash'>;
   }
 
   async deleteById(id: string) {
     return this.repo.doc(id).delete();
+  }
+  
+  async exists({ email }: ExistsArgs) {
+    const queried = await this.repo.where('email', '==', email).get();
+    return queried.docs.length > 0;
   }
 }

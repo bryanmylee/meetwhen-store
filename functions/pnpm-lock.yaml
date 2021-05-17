@@ -1,11 +1,12 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@types/bcryptjs': ^2.4.2
   '@types/cookie-parser': ^1.4.2
   '@typescript-eslint/eslint-plugin': ^3.9.1
   '@typescript-eslint/parser': ^3.8.0
   apollo-server-express: ^2.24.0
-  axios: ^0.21.1
+  bcryptjs: ^2.4.3
   class-validator: ^0.13.1
   cookie-parser: ^1.4.5
   cors: ^2.8.5
@@ -26,15 +27,16 @@ specifiers:
   typescript: ^3.8.0
 
 dependencies:
-  axios: 0.21.1
   firebase-admin: 9.8.0
   firebase-functions: 3.14.0_firebase-admin@9.8.0
 
 devDependencies:
+  '@types/bcryptjs': 2.4.2
   '@types/cookie-parser': 1.4.2
   '@typescript-eslint/eslint-plugin': 3.10.1_5182e8aac36775dd3927fc5148d54ea0
   '@typescript-eslint/parser': 3.10.1_eslint@7.26.0+typescript@3.9.9
   apollo-server-express: 2.24.0_graphql@15.5.0
+  bcryptjs: 2.4.3
   class-validator: 0.13.1
   cookie-parser: 1.4.5
   cors: 2.8.5
@@ -343,6 +345,10 @@ packages:
     resolution: {integrity: sha512-jOdnI/3qTpHABjM5cx1Hc0sKsPoYCp+DP/GJRGtDlPd7fiV9oXGGIcjW/ZOxLIvjGz8MA+uMZI9metHlgqbgwQ==}
     dependencies:
       '@types/node': 15.3.0
+    dev: true
+
+  /@types/bcryptjs/2.4.2:
+    resolution: {integrity: sha512-LiMQ6EOPob/4yUL66SZzu6Yh77cbzJFYll+ZfaPiPPFswtIlA/Fs1MzdKYA7JApHU49zQTbJGX3PDmCpIdDBRQ==}
     dev: true
 
   /@types/body-parser/1.19.0:
@@ -948,14 +954,6 @@ packages:
     resolution: {integrity: sha1-x57Zf380y48robyXkLzDZkdLS3k=}
     dev: true
 
-  /axios/0.21.1:
-    resolution: {integrity: sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==}
-    dependencies:
-      follow-redirects: 1.14.1
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /backo2/1.0.2:
     resolution: {integrity: sha1-MasayLEpNjRj41s+u2n038+6eUc=}
     dev: true
@@ -968,6 +966,10 @@ packages:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
     dev: false
     optional: true
+
+  /bcryptjs/2.4.3:
+    resolution: {integrity: sha1-mrVie5PmBiH/fNrF2pczAn3x0Ms=}
+    dev: true
 
   /bignumber.js/9.0.1:
     resolution: {integrity: sha512-IdZR9mh6ahOBv/hYGiXyVuyCetmGJhtYkqLBpTStdhEGjegpPlUawydyaF3pbIOFynJTpllEs+NP+CS9jKFLjA==}
@@ -1693,16 +1695,6 @@ packages:
   /flatted/3.1.1:
     resolution: {integrity: sha512-zAoAQiudy+r5SvnSw3KJy5os/oRJYHzrzja/tBDqrZtNhUw8bt6y8OBzMWcjWr+8liV8Eb6yOhw8WZ7VFZ5ZzA==}
     dev: true
-
-  /follow-redirects/1.14.1:
-    resolution: {integrity: sha512-HWqDgT7ZEkqRzBvc2s64vSZ/hfOceEol3ac/7tKwzuvEyWx3/4UegXh5oBOIotkGsObyk3xznnSRVADBgWSQVg==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
-    dev: false
 
   /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
