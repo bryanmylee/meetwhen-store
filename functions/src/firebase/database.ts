@@ -1,15 +1,18 @@
 import * as admin from 'firebase-admin';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
+import { Inject, Service } from 'typedi';
 import { Identifiable } from '../types/identifiable';
-
-admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-});
+import { FirebaseService } from './firebase';
 
 const database = admin.firestore();
 
+@Service()
 export class Repo<T extends Identifiable> {
+  @Inject()
+  firebase: FirebaseService;
+
   protected repo: FirebaseFirestore.CollectionReference;
+
   constructor(collectionId: string) {
     this.repo = database.collection(collectionId);
   }
