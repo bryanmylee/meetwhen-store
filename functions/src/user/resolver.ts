@@ -90,4 +90,11 @@ export class UserResolver {
       email: user.email,
     } as User;
   }
+  
+  @Mutation((returns) => Boolean)
+  async logout(@Ctx('res') res: Response) {
+    res.setHeader('cache-control', 'private');
+    res.clearCookie('__session');
+    return true;
+  }
 }
