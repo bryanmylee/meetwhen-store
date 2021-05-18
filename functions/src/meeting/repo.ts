@@ -30,6 +30,11 @@ export class MeetingRepo extends Repo<MeetingEntry> {
     const doc = results.docs[0];
     return { ...doc.data(), id: doc.id } as MeetingEntry;
   }
+  
+  async findAllByOwnerId(ownerId: string) {
+    const results = await this.repo.where('ownerId', '==', ownerId).get();
+    return results.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as MeetingEntry[];
+  }
 
   async addNew(newMeeting: AddNewArgs) {
     const newRef = this.repo.doc();

@@ -26,6 +26,10 @@ export class MeetingService {
   async findBySlug(slug: string) {
     return this.repo.findBySlug(slug);
   }
+  
+  async findAllByOwnerId(ownerId: string) {
+    return this.repo.findAllByOwnerId(ownerId);
+  }
 
   private async generateSlug() {
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {

@@ -1,5 +1,7 @@
 import { Length } from 'class-validator';
 import { Response } from 'express';
+import { MeetingService } from '../meeting/service';
+import { Meeting } from '../meeting/types';
 import {
   Arg,
   Authorized,
@@ -48,6 +50,9 @@ class LoginInput implements Partial<User> {
 export class UserResolver {
   @Inject()
   private userService: UserService;
+  
+  @Inject()
+  private meetingService: MeetingService;
 
   @Inject()
   private scheduleService: ScheduleService;
@@ -65,6 +70,11 @@ export class UserResolver {
       id: principal!.uid,
       email: principal!.email,
     } as User;
+  }
+  
+  @FieldResolver()
+  async meetings(@Root() user: User) {
+    return (await this.meetingService.findAllByOwnerId(user.id)) as Meeting[];
   }
 
   @FieldResolver()
