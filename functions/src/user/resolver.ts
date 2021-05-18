@@ -6,6 +6,7 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  ID,
   InputType,
   Mutation,
   Query,
@@ -58,7 +59,7 @@ export class UserResolver {
   private scheduleService: ScheduleService;
 
   @Query(() => User)
-  async user(@Arg('id') id: string): Promise<User> {
+  async user(@Arg('id', () => ID) id: string): Promise<User> {
     return (await this.userService.findById(id)) as User;
   }
 

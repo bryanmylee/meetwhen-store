@@ -5,6 +5,7 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  ID,
   InputType,
   Int,
   Mutation,
@@ -24,16 +25,16 @@ import { Interval, Schedule } from './types';
 
 @ArgsType()
 class GetScheduleArgs {
-  @Field()
+  @Field(() => ID)
   meetingId: string;
 
-  @Field()
+  @Field(() => ID)
   userId: string;
 }
 
 @ArgsType()
 class JoinMeetingArgs {
-  @Field()
+  @Field(() => ID)
   meetingId: string;
 
   @Field(() => [IntervalInput])

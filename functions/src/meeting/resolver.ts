@@ -8,6 +8,7 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  ID,
   InputType,
   Mutation,
   Query,
@@ -26,7 +27,7 @@ import { Meeting } from './types';
 
 @ArgsType()
 class QueryMeetingArgs implements Partial<Meeting> {
-  @Field({ nullable: true })
+  @Field(() => ID, { nullable: true })
   id?: string;
 
   @Field({ nullable: true })
@@ -42,7 +43,7 @@ class AddMeetingInput implements Partial<Meeting> {
 
 @InputType()
 class EditMeetingInput implements Partial<Meeting> {
-  @Field()
+  @Field(() => ID)
   id: string;
 
   @Field({ nullable: true })
