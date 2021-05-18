@@ -2,6 +2,8 @@ import { Length } from 'class-validator';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import {
   Arg,
+  Args,
+  ArgsType,
   Authorized,
   Ctx,
   Field,
@@ -21,6 +23,15 @@ import { UserService } from '../user/service';
 import { User } from '../user/types';
 import { MeetingService } from './service';
 import { Meeting } from './types';
+
+@ArgsType()
+class QueryMeetingArgs implements Partial<Meeting> {
+  @Field({ nullable: true })
+  id?: string;
+
+  @Field({ nullable: true })
+  slug?: string;
+}
 
 @InputType()
 class AddMeetingInput implements Partial<Meeting> {
@@ -52,8 +63,14 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   private scheduleService: ScheduleService;
 
   @Query((returns) => Meeting)
-  async meeting(@Arg('id') id: string) {
-    return this.meetingService.findById(id);
+  async meeting(@Args() { id, slug }: QueryMeetingArgs) {
+    if (id !== undefined) {
+      return this.meetingService.findById(id);
+    }
+    if (slug !== undefined) {
+      return this.meetingService.findBySlug(slug);
+    }
+    throw new HttpsError('invalid-argument', 'id or slug must be provided');
   }
 
   @FieldResolver()
