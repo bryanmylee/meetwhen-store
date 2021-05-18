@@ -61,9 +61,9 @@ export class UserResolver {
   @Authorized()
   async me(@Ctx('principal') principal: Principal) {
     return {
-      name: principal?.name,
-      id: principal?.uid,
-      email: principal?.email,
+      name: principal!.name,
+      id: principal!.uid,
+      email: principal!.email,
     } as User;
   }
 

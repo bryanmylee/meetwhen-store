@@ -90,7 +90,7 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     return this.scheduleService.joinMeeting({
       meetingId,
       intervals,
-      userId: principal?.uid as string,
+      userId: principal!.uid,
     });
   }
 }
