@@ -35,8 +35,7 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   private userService: UserService;
 
   @Query((returns) => Meeting)
-  async meeting(@Arg('id') id: string, @Ctx('principal') principal: Principal) {
-    console.log(principal);
+  async meeting(@Arg('id') id: string) {
     return this.meetingService.findById(id);
   }
 
@@ -50,7 +49,10 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
 
   // TODO: Get owner id from context.
   @Mutation((returns) => Meeting)
-  async addMeeting(@Arg('data') data: AddMeetingArgs) {
+  async addMeeting(@Arg('data') data: AddMeetingArgs, @Ctx('principal') principal: Principal) {
+    if (principal !== null) {
+      return this.meetingService.addNew({ ...data, ownerId: principal.uid });
+    }
     return this.meetingService.addNew(data);
   }
 }

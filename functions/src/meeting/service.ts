@@ -3,6 +3,7 @@ import { MeetingRepo } from './repo';
 
 class AddNewArgs {
   name: string;
+  ownerId?: string;
 }
 
 @Service()

@@ -4,6 +4,7 @@ import { MeetingEntry } from './types';
 
 class AddNewArgs {
   name: string;
+  ownerId?: string;
 }
 
 @Service()
