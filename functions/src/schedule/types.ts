@@ -9,7 +9,7 @@ export class Schedule extends Identifiable {
   meeting: Meeting;
   meetingId: string;
 
-  @Field()
+  @Field((type) => User)
   user: User;
   userId: string;
 

@@ -46,6 +46,11 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
     return results.docs.map((doc) => ({ ...doc.data(), id: doc.id } as ScheduleEntry));
   }
 
+  async findAllWithUserId(userId: string) {
+    const results = await this.repo.where('userId', '==', userId).get();
+    return results.docs.map((doc) => ({ ...doc.data(), id: doc.id } as ScheduleEntry));
+  }
+
   async addSchedule({ meetingId, userId, intervals }: AddScheduleArgs) {
     const newRef = await this.repo.add({
       meetingId,

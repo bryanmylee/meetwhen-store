@@ -17,6 +17,7 @@ import { ScheduleService } from '../schedule/service';
 import { Schedule } from '../schedule/types';
 import { Principal } from '../security/context';
 import { UserService } from '../user/service';
+import { User } from '../user/types';
 import { MeetingService } from './service';
 import { Meeting } from './types';
 
@@ -49,13 +50,12 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
     if (meeting.ownerId === undefined) {
       throw new HttpsError('invalid-argument', `meeting(id=${meeting.id}) no owner`);
     }
-    return this.userService.findById(meeting.ownerId);
+    return (await this.userService.findById(meeting.ownerId)) as User;
   }
 
   @FieldResolver()
   async schedules(@Root() meeting: Meeting) {
-    const scheduleEntries = await this.scheduleService.findAllWithMeetingId(meeting.id);
-    return scheduleEntries as Schedule[];
+    return (await this.scheduleService.findAllWithMeetingId(meeting.id)) as Schedule[];
   }
 
   @Mutation((returns) => Meeting)

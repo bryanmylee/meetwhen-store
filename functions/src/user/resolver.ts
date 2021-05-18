@@ -1,7 +1,20 @@
 import { Length } from 'class-validator';
 import { Response } from 'express';
-import { Arg, Authorized, Ctx, Field, InputType, Mutation, Query, Resolver } from 'type-graphql';
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  Field,
+  FieldResolver,
+  InputType,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+} from 'type-graphql';
 import { Inject, Service } from 'typedi';
+import { ScheduleService } from '../schedule/service';
+import { Schedule } from '../schedule/types';
 import { Principal } from '../security/context';
 import { UserService } from './service';
 import { User } from './types';
@@ -36,6 +49,9 @@ export class UserResolver {
   @Inject()
   private userService: UserService;
 
+  @Inject()
+  private scheduleService: ScheduleService;
+
   @Query((returns) => User)
   async user(@Arg('id') id: string) {
     return this.userService.findById(id);
@@ -49,6 +65,11 @@ export class UserResolver {
       id: principal?.uid,
       email: principal?.email,
     } as User;
+  }
+
+  @FieldResolver()
+  async schedules(@Root() user: User) {
+    return (await this.scheduleService.findAllWithUserId(user.id)) as Schedule[];
   }
 
   @Mutation((returns) => User)
