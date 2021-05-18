@@ -19,7 +19,7 @@ import { MeetingService } from './service';
 import { Meeting } from './types';
 
 @InputType()
-class AddMeetingArgs implements Partial<Meeting> {
+class AddMeetingInput implements Partial<Meeting> {
   @Field()
   @Length(1, 50)
   name: string;
@@ -47,9 +47,8 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
     return this.userService.findById(meeting.ownerId);
   }
 
-  // TODO: Get owner id from context.
   @Mutation((returns) => Meeting)
-  async addMeeting(@Arg('data') data: AddMeetingArgs, @Ctx('principal') principal: Principal) {
+  async addMeeting(@Arg('data') data: AddMeetingInput, @Ctx('principal') principal: Principal) {
     if (principal !== null) {
       return this.meetingService.addNew({ ...data, ownerId: principal.uid });
     }
