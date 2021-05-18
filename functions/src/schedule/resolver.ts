@@ -20,7 +20,7 @@ import { Principal } from '../security/context';
 import { UserService } from '../user/service';
 import { User } from '../user/types';
 import { ScheduleService } from './service';
-import { Schedule } from './types';
+import { Interval, Schedule } from './types';
 
 @ArgsType()
 class GetScheduleArgs {
@@ -36,16 +36,16 @@ class JoinMeetingArgs {
   @Field()
   meetingId: string;
 
-  @Field((type) => [IntervalInput])
+  @Field(() => [IntervalInput])
   intervals: IntervalInput[];
 }
 
 @InputType()
 class IntervalInput {
-  @Field((type) => Int)
+  @Field(() => Int)
   beg: number;
 
-  @Field((type) => Int)
+  @Field(() => Int)
   end: number;
 }
 
@@ -61,36 +61,36 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
   @Inject()
   private userService: UserService;
 
-  @Query((returns) => Schedule)
-  async schedule(@Args() { meetingId, userId }: GetScheduleArgs) {
-    return this.scheduleService.findByMeetingUser({ meetingId, userId });
+  @Query(() => Schedule)
+  async schedule(@Args() { meetingId, userId }: GetScheduleArgs): Promise<Schedule> {
+    return (await this.scheduleService.findByMeetingUser({ meetingId, userId })) as Schedule;
   }
 
   @FieldResolver()
-  async meeting(@Root() { meetingId }: Schedule) {
+  async meeting(@Root() { meetingId }: Schedule): Promise<Meeting> {
     return (await this.meetingService.findById(meetingId)) as Meeting;
   }
 
   @FieldResolver()
-  async user(@Root() { userId }: Schedule) {
+  async user(@Root() { userId }: Schedule): Promise<User> {
     return (await this.userService.findById(userId)) as User;
   }
 
   @FieldResolver()
-  intervals(@Root() { intervals }: Schedule) {
+  intervals(@Root() { intervals }: Schedule): Interval[] {
     return intervals;
   }
 
-  @Mutation((returns) => Schedule)
+  @Mutation(() => Schedule)
   @Authorized()
-  joinMeeting(
+  async joinMeeting(
     @Args() { meetingId, intervals }: JoinMeetingArgs,
     @Ctx('principal') principal: Principal
-  ) {
-    return this.scheduleService.joinMeeting({
+  ): Promise<Schedule> {
+    return (await this.scheduleService.joinMeeting({
       meetingId,
       intervals,
       userId: principal!.uid,
-    });
+    })) as Schedule;
   }
 }

@@ -5,15 +5,15 @@ import { User } from '../user/types';
 
 @ObjectType()
 export class Schedule extends Identifiable {
-  @Field((type) => Meeting)
+  @Field(() => Meeting)
   meeting: Meeting;
   meetingId: string;
 
-  @Field((type) => User)
+  @Field(() => User)
   user: User;
   userId: string;
 
-  @Field((type) => [Interval])
+  @Field(() => [Interval])
   intervals: Interval[];
 }
 
@@ -25,9 +25,9 @@ export class ScheduleEntry extends Identifiable {
 
 @ObjectType()
 export class Interval {
-  @Field((type) => Int)
+  @Field(() => Int)
   beg: number;
 
-  @Field((type) => Int)
+  @Field(() => Int)
   end: number;
 }

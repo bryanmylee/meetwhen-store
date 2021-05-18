@@ -2,6 +2,7 @@ import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { nanoid } from 'nanoid';
 import { Inject, Service } from 'typedi';
 import { MeetingRepo } from './repo';
+import { MeetingEntry } from './types';
 
 const MAX_ATTEMPTS = 5;
 
@@ -19,15 +20,15 @@ export class MeetingService {
   @Inject()
   private repo: MeetingRepo;
 
-  async findById(id: string) {
+  async findById(id: string): Promise<MeetingEntry> {
     return this.repo.findById(id);
   }
 
-  async findBySlug(slug: string) {
+  async findBySlug(slug: string): Promise<MeetingEntry> {
     return this.repo.findBySlug(slug);
   }
 
-  async findAllByOwnerId(ownerId: string) {
+  async findAllByOwnerId(ownerId: string): Promise<MeetingEntry[]> {
     return this.repo.findAllByOwnerId(ownerId);
   }
 
@@ -45,11 +46,11 @@ export class MeetingService {
     throw new HttpsError('internal', 'could not generate new slug');
   }
 
-  async addNew(newMeeting: AddNewArgs) {
+  async addNew(newMeeting: AddNewArgs): Promise<MeetingEntry> {
     return this.repo.addNew({ ...newMeeting, slug: await this.generateSlug() });
   }
 
-  async edit(id: string, editArgs: EditArgs) {
+  async edit(id: string, editArgs: EditArgs): Promise<MeetingEntry> {
     return this.repo.edit(id, editArgs);
   }
 }

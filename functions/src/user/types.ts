@@ -11,10 +11,10 @@ export class User extends Identifiable {
   @Field()
   email: string;
 
-  @Field((type) => [Meeting])
+  @Field(() => [Meeting])
   meetings: Meeting[];
 
-  @Field((type) => [Schedule])
+  @Field(() => [Schedule])
   schedules: Schedule[];
 }
 

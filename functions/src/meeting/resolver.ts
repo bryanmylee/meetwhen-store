@@ -62,19 +62,19 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   @Inject()
   private scheduleService: ScheduleService;
 
-  @Query((returns) => Meeting)
-  async meeting(@Args() { id, slug }: QueryMeetingArgs) {
+  @Query(() => Meeting)
+  async meeting(@Args() { id, slug }: QueryMeetingArgs): Promise<Meeting> {
     if (id !== undefined) {
-      return this.meetingService.findById(id);
+      return (await this.meetingService.findById(id)) as Meeting;
     }
     if (slug !== undefined) {
-      return this.meetingService.findBySlug(slug);
+      return (await this.meetingService.findBySlug(slug)) as Meeting;
     }
     throw new HttpsError('invalid-argument', 'id or slug must be provided');
   }
 
   @FieldResolver()
-  async owner(@Root() meeting: Meeting) {
+  async owner(@Root() meeting: Meeting): Promise<User> {
     if (meeting.ownerId === undefined) {
       throw new HttpsError('invalid-argument', `meeting(id=${meeting.id}) no owner`);
     }
@@ -82,24 +82,27 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   }
 
   @FieldResolver()
-  async schedules(@Root() meeting: Meeting) {
+  async schedules(@Root() meeting: Meeting): Promise<Schedule[]> {
     return (await this.scheduleService.findAllWithMeetingId(meeting.id)) as Schedule[];
   }
 
-  @Mutation((returns) => Meeting)
-  async addMeeting(@Arg('data') data: AddMeetingInput, @Ctx('principal') principal: Principal) {
+  @Mutation(() => Meeting)
+  async addMeeting(
+    @Arg('data') data: AddMeetingInput,
+    @Ctx('principal') principal: Principal
+  ): Promise<Meeting> {
     if (principal !== null) {
-      return this.meetingService.addNew({ ...data, ownerId: principal.uid });
+      return (await this.meetingService.addNew({ ...data, ownerId: principal.uid })) as Meeting;
     }
-    return this.meetingService.addNew(data);
+    return (await this.meetingService.addNew(data)) as Meeting;
   }
 
-  @Mutation((returns) => Meeting)
+  @Mutation(() => Meeting)
   @Authorized()
   async editMeeting(
     @Arg('data') { id, ...editArgs }: EditMeetingInput,
     @Ctx('principal') principal: Principal
-  ) {
+  ): Promise<Meeting> {
     const meetingEntry = await this.meetingService.findById(id);
     if (meetingEntry.ownerId === undefined) {
       throw new HttpsError(
@@ -110,6 +113,6 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
     if (principal!.uid !== meetingEntry.ownerId) {
       throw new HttpsError('permission-denied', `meeting(id=${id}) edit permission denied`);
     }
-    return this.meetingService.edit(id, editArgs);
+    return (await this.meetingService.edit(id, editArgs)) as Meeting;
   }
 }

@@ -13,7 +13,7 @@ export type Context = ExpressContext & { principal: Principal };
  * `context` is used to verify any JWT cookies on the server request and populate the `principal`
  * property.
  */
-export const context: ContextFunction<ExpressContext, object> = async ({ req, res }) => {
+export const context: ContextFunction<ExpressContext, unknown> = async ({ req, res }) => {
   try {
     const principal: Principal = await firebaseAdmin.auth().verifyIdToken(req.cookies.__session);
     return { req, res, principal } as Context;

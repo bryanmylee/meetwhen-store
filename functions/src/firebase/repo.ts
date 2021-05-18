@@ -9,10 +9,10 @@ export class Repo<T extends Identifiable> {
     this.repo = firebaseAdmin.firestore().collection(collectionId);
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<T> {
     const ref = this.repo.doc(id);
     const doc = await ref.get();
-    const data = doc.data() as any;
+    const data = doc.data() as Omit<T, 'id'>;
     if (data === undefined) {
       throw new HttpsError('not-found', `meeting(id=${id}) not found`);
     }

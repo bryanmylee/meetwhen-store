@@ -19,7 +19,7 @@ export class MeetingRepo extends Repo<MeetingEntry> {
     super('meeting');
   }
 
-  async findBySlug(slug: string) {
+  async findBySlug(slug: string): Promise<MeetingEntry> {
     const results = await this.repo.where('slug', '==', slug).get();
     if (results.docs.length > 1) {
       throw new HttpsError('internal', `meeting(slug=${slug}) not unique`);
@@ -31,18 +31,18 @@ export class MeetingRepo extends Repo<MeetingEntry> {
     return { ...doc.data(), id: doc.id } as MeetingEntry;
   }
 
-  async findAllByOwnerId(ownerId: string) {
+  async findAllByOwnerId(ownerId: string): Promise<MeetingEntry[]> {
     const results = await this.repo.where('ownerId', '==', ownerId).get();
     return results.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as MeetingEntry[];
   }
 
-  async addNew(newMeeting: AddNewArgs) {
+  async addNew(newMeeting: AddNewArgs): Promise<MeetingEntry> {
     const newRef = this.repo.doc();
     await newRef.set({ ...newMeeting });
     return { ...newMeeting, id: newRef.id } as MeetingEntry;
   }
 
-  async edit(id: string, editArgs: EditArgs) {
+  async edit(id: string, editArgs: EditArgs): Promise<MeetingEntry> {
     await this.repo.doc(id).set({ ...editArgs }, { merge: true });
     return this.findById(id);
   }

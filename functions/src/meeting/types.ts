@@ -15,7 +15,7 @@ export class Meeting extends Identifiable {
   owner?: User;
   ownerId?: string;
 
-  @Field((type) => [Schedule])
+  @Field(() => [Schedule])
   schedules: Schedule[];
 }
 

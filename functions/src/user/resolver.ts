@@ -57,14 +57,14 @@ export class UserResolver {
   @Inject()
   private scheduleService: ScheduleService;
 
-  @Query((returns) => User)
-  async user(@Arg('id') id: string) {
-    return this.userService.findById(id);
+  @Query(() => User)
+  async user(@Arg('id') id: string): Promise<User> {
+    return (await this.userService.findById(id)) as User;
   }
 
-  @Query((returns) => User)
+  @Query(() => User)
   @Authorized()
-  async me(@Ctx('principal') principal: Principal) {
+  async me(@Ctx('principal') principal: Principal): Promise<User> {
     return {
       name: principal!.name,
       id: principal!.uid,
@@ -73,23 +73,23 @@ export class UserResolver {
   }
 
   @FieldResolver()
-  async meetings(@Root() user: User) {
+  async meetings(@Root() user: User): Promise<Meeting[]> {
     return (await this.meetingService.findAllByOwnerId(user.id)) as Meeting[];
   }
 
   @FieldResolver()
-  async schedules(@Root() user: User) {
+  async schedules(@Root() user: User): Promise<Schedule[]> {
     return (await this.scheduleService.findAllWithUserId(user.id)) as Schedule[];
   }
 
-  @Mutation((returns) => User)
-  async addUser(@Arg('data') data: AddUserInput, @Ctx('res') res: Response) {
+  @Mutation(() => User)
+  async addUser(@Arg('data') data: AddUserInput, @Ctx('res') res: Response): Promise<User> {
     await this.userService.addNew(data);
     return this.login(data, res);
   }
 
-  @Mutation((returns) => User)
-  async login(@Arg('data') data: LoginInput, @Ctx('res') res: Response) {
+  @Mutation(() => User)
+  async login(@Arg('data') data: LoginInput, @Ctx('res') res: Response): Promise<User> {
     const user = await this.userService.login(data);
     const token = await user.getIdToken();
     res.setHeader('cache-control', 'private');
@@ -101,8 +101,8 @@ export class UserResolver {
     } as User;
   }
 
-  @Mutation((returns) => Boolean)
-  async logout(@Ctx('res') res: Response) {
+  @Mutation(() => Boolean)
+  async logout(@Ctx('res') res: Response): Promise<boolean> {
     res.setHeader('cache-control', 'private');
     res.clearCookie('__session');
     return true;

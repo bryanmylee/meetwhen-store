@@ -17,6 +17,9 @@ module.exports = {
     project: ['tsconfig.json', 'tsconfig.dev.json'],
     sourceType: 'module',
   },
+  rules: {
+    '@typescript-eslint/no-non-null-assertion': 'off',
+  },
   ignorePatterns: [
     '/lib/**/*', // Ignore built files.
   ],
