@@ -10,6 +10,12 @@ export class User extends Identifiable {
   email: string;
 }
 
+@ObjectType()
+export class UserPrincipal extends Identifiable implements Omit<User, 'name'> {
+  @Field()
+  email: string;
+}
+
 export class UserEntry extends Identifiable {
   name: string;
   email: string;

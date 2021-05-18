@@ -1,9 +1,11 @@
 import { Length } from 'class-validator';
 import { Response } from 'express';
-import { Arg, Ctx, Field, InputType, Mutation, Query, Resolver } from 'type-graphql';
+import { Principal } from '../security/context';
+import { Arg, Authorized, Ctx, Field, InputType, Mutation, Query, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 import { UserService } from './service';
-import { User } from './types';
+import { User, UserPrincipal } from './types';
+import { HttpsError } from 'firebase-functions/lib/providers/https';
 
 @InputType()
 class AddUserArgs implements Partial<User> {
@@ -38,6 +40,18 @@ export class UserResolver {
   @Query((returns) => User)
   async user(@Arg('id') id: string) {
     return this.userService.findById(id);
+  }
+  
+  @Query((returns) => UserPrincipal)
+  @Authorized()
+  async me(@Ctx('principal') principal: Principal) {
+    if (principal === null) {
+      throw new HttpsError('unauthenticated', `no logged in user`);
+    }
+    return {
+      id: principal.uid,
+      email: principal.email,
+    } as UserPrincipal;
   }
 
   @Mutation((returns) => User)
