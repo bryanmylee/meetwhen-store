@@ -8,6 +8,11 @@ class AddNewArgs {
   ownerId?: string;
 }
 
+class EditArgs {
+  name?: string;
+}
+
+
 @Service()
 export class MeetingRepo extends Repo<MeetingEntry> {
   constructor() {
@@ -18,5 +23,10 @@ export class MeetingRepo extends Repo<MeetingEntry> {
     const newRef = this.repo.doc();
     await newRef.set({ ...newMeeting });
     return { ...newMeeting, id: newRef.id } as MeetingEntry;
+  }
+  
+  async edit(id: string, editArgs: EditArgs) {
+    await this.repo.doc(id).set({ ...editArgs }, { merge: true });
+    return this.findById(id);
   }
 }

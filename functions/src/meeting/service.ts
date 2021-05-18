@@ -7,6 +7,10 @@ class AddNewArgs {
   ownerId?: string;
 }
 
+class EditArgs {
+  name?: string;
+}
+
 @Service()
 export class MeetingService {
   @Inject()
@@ -21,5 +25,9 @@ export class MeetingService {
       ...newMeeting,
       slug: nanoid(12), // ~1000 years before 1% collision at 1000 events per hour
     });
+  }
+  
+  async edit(id: string, editArgs: EditArgs) {
+    return this.repo.edit(id, editArgs);
   }
 }

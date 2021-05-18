@@ -2,6 +2,7 @@ import { Length } from 'class-validator';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import {
   Arg,
+  Authorized,
   Ctx,
   Field,
   FieldResolver,
@@ -26,6 +27,16 @@ class AddMeetingInput implements Partial<Meeting> {
   @Field()
   @Length(1, 50)
   name: string;
+}
+
+@InputType()
+class EditMeetingInput implements Partial<Meeting> {
+  @Field()
+  id: string;
+
+  @Field({ nullable: true })
+  @Length(1, 50)
+  name?: string;
 }
 
 @Service()
@@ -64,5 +75,18 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
       return this.meetingService.addNew({ ...data, ownerId: principal.uid });
     }
     return this.meetingService.addNew(data);
+  }
+  
+  @Mutation((returns) => Meeting)
+  @Authorized()
+  async editMeeting(@Arg('data') { id, ...editArgs }: EditMeetingInput, @Ctx('principal') principal: Principal) {
+    const meetingEntry = await this.meetingService.findById(id);
+    if (meetingEntry.ownerId === undefined) {
+      throw new HttpsError('permission-denied', `meeting(id=${id}) has no owner and cannot be edited`);
+    }
+    if (principal!.uid !== meetingEntry.ownerId) {
+      throw new HttpsError('permission-denied', `meeting(id=${id}) edit permission denied`)
+    }
+    return this.meetingService.edit(id, editArgs);
   }
 }
