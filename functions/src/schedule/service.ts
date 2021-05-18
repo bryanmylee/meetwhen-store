@@ -1,4 +1,5 @@
 import { Inject, Service } from 'typedi';
+import { MeetingService } from '../meeting/service';
 import { ScheduleRepo } from './repo';
 import { Interval } from './types';
 
@@ -18,6 +19,9 @@ export class ScheduleService {
   @Inject()
   private scheduleRepo: ScheduleRepo;
 
+  @Inject()
+  private meetingService: MeetingService;
+
   async findByMeetingUser({ meetingId, userId }: FindByMeetingUserArgs) {
     return this.scheduleRepo.findByMeetingUser({ meetingId, userId });
   }
@@ -31,6 +35,7 @@ export class ScheduleService {
   }
 
   async joinMeeting({ meetingId, userId, intervals }: JoinMeetingArgs) {
+    await this.meetingService.findById(meetingId);
     return this.scheduleRepo.addSchedule({ meetingId, userId, intervals });
   }
 }
