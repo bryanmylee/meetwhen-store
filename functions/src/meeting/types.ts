@@ -1,4 +1,5 @@
 import { Field, ObjectType } from 'type-graphql';
+import { Schedule } from '../schedule/types';
 import { Identifiable } from '../types/identifiable';
 import { User } from '../user/types';
 
@@ -13,6 +14,9 @@ export class Meeting extends Identifiable {
   @Field()
   owner?: User;
   ownerId?: string;
+
+  @Field((type) => [Schedule])
+  schedules: Schedule[];
 }
 
 export class MeetingEntry extends Identifiable {

@@ -22,6 +22,10 @@ export class ScheduleService {
     return this.scheduleRepo.findByMeetingUser({ meetingId, userId });
   }
 
+  async findAllWithMeetingId(meetingId: string) {
+    return this.scheduleRepo.findAllWithMeetingId(meetingId);
+  }
+
   async joinMeeting({ meetingId, userId, intervals }: JoinMeetingArgs) {
     return this.scheduleRepo.addSchedule({ meetingId, userId, intervals });
   }

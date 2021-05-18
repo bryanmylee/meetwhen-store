@@ -15,6 +15,7 @@ import {
 } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 import { Principal } from '../security/context';
+import { UserService } from '../user/service';
 import { ScheduleService } from './service';
 import { Schedule } from './types';
 
@@ -51,9 +52,17 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
   @Inject()
   private scheduleService: ScheduleService;
 
+  @Inject()
+  private userService: UserService;
+
   @Query((returns) => Schedule)
   async schedule(@Args() { meetingId, userId }: GetScheduleArgs) {
     return this.scheduleService.findByMeetingUser({ meetingId, userId });
+  }
+
+  @FieldResolver()
+  async user(@Root() { userId }: Schedule) {
+    return this.userService.findById(userId);
   }
 
   @FieldResolver()

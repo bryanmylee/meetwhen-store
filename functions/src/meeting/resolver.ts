@@ -13,6 +13,8 @@ import {
   Root,
 } from 'type-graphql';
 import { Inject, Service } from 'typedi';
+import { ScheduleService } from '../schedule/service';
+import { Schedule } from '../schedule/types';
 import { Principal } from '../security/context';
 import { UserService } from '../user/service';
 import { MeetingService } from './service';
@@ -34,6 +36,9 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   @Inject()
   private userService: UserService;
 
+  @Inject()
+  private scheduleService: ScheduleService;
+
   @Query((returns) => Meeting)
   async meeting(@Arg('id') id: string) {
     return this.meetingService.findById(id);
@@ -45,6 +50,12 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
       throw new HttpsError('invalid-argument', `meeting(id=${meeting.id}) no owner`);
     }
     return this.userService.findById(meeting.ownerId);
+  }
+
+  @FieldResolver()
+  async schedules(@Root() meeting: Meeting) {
+    const scheduleEntries = await this.scheduleService.findAllWithMeetingId(meeting.id);
+    return scheduleEntries as Schedule[];
   }
 
   @Mutation((returns) => Meeting)
