@@ -76,16 +76,22 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
     }
     return this.meetingService.addNew(data);
   }
-  
+
   @Mutation((returns) => Meeting)
   @Authorized()
-  async editMeeting(@Arg('data') { id, ...editArgs }: EditMeetingInput, @Ctx('principal') principal: Principal) {
+  async editMeeting(
+    @Arg('data') { id, ...editArgs }: EditMeetingInput,
+    @Ctx('principal') principal: Principal
+  ) {
     const meetingEntry = await this.meetingService.findById(id);
     if (meetingEntry.ownerId === undefined) {
-      throw new HttpsError('permission-denied', `meeting(id=${id}) has no owner and cannot be edited`);
+      throw new HttpsError(
+        'permission-denied',
+        `meeting(id=${id}) has no owner and cannot be edited`
+      );
     }
     if (principal!.uid !== meetingEntry.ownerId) {
-      throw new HttpsError('permission-denied', `meeting(id=${id}) edit permission denied`)
+      throw new HttpsError('permission-denied', `meeting(id=${id}) edit permission denied`);
     }
     return this.meetingService.edit(id, editArgs);
   }

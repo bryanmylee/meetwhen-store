@@ -26,7 +26,7 @@ export class MeetingService {
       slug: nanoid(12), // ~1000 years before 1% collision at 1000 events per hour
     });
   }
-  
+
   async edit(id: string, editArgs: EditArgs) {
     return this.repo.edit(id, editArgs);
   }
