@@ -1,4 +1,9 @@
-// create a .runtimeconfig.json to set local environment variables for development
+/**
+ * Create a .runtimeconfig.json to set local environment variables for development
+
+ * Before deployment, set each configuration value with `firebase functions:config:set <service>.<key>="<value>" <service>.<key>="<value>"`.
+ */
+
 {
   "api": {
     "env": "development"
