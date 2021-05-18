@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { Inject, Service } from 'typedi';
 import { MeetingRepo } from './repo';
 
@@ -16,6 +17,9 @@ export class MeetingService {
   }
 
   async addNew(newMeeting: AddNewArgs) {
-    return this.repo.addNew(newMeeting);
+    return this.repo.addNew({
+      ...newMeeting,
+      slug: nanoid(12), // ~1000 years before 1% collision at 1000 events per hour
+    });
   }
 }

@@ -8,11 +8,15 @@ export class Meeting extends Identifiable {
   name: string;
 
   @Field()
+  slug: string;
+
+  @Field()
   owner?: User;
   ownerId?: string;
 }
 
 export class MeetingEntry extends Identifiable {
   name: string;
+  slug: string;
   ownerId?: string;
 }

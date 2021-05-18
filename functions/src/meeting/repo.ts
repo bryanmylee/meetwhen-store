@@ -4,6 +4,7 @@ import { MeetingEntry } from './types';
 
 class AddNewArgs {
   name: string;
+  slug: string;
   ownerId?: string;
 }
 

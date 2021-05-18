@@ -1,11 +1,11 @@
 import { Length } from 'class-validator';
 import { Response } from 'express';
-import { Principal } from '../security/context';
+import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Arg, Authorized, Ctx, Field, InputType, Mutation, Query, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
+import { Principal } from '../security/context';
 import { UserService } from './service';
 import { User, UserPrincipal } from './types';
-import { HttpsError } from 'firebase-functions/lib/providers/https';
 
 @InputType()
 class AddUserArgs implements Partial<User> {
@@ -41,7 +41,7 @@ export class UserResolver {
   async user(@Arg('id') id: string) {
     return this.userService.findById(id);
   }
-  
+
   @Query((returns) => UserPrincipal)
   @Authorized()
   async me(@Ctx('principal') principal: Principal) {
