@@ -1,11 +1,17 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Service } from 'typedi';
 import { Repo } from '../firebase/repo';
-import { ScheduleEntry } from './types';
+import { Interval, ScheduleEntry } from './types';
 
 class FindByMeetingUserArgs {
   meetingId: string;
   userId: string;
+}
+
+class AddScheduleArgs {
+  meetingId: string;
+  userId: string;
+  intervals: Interval[];
 }
 
 @Service()
@@ -33,5 +39,14 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
     }
     const doc = results.docs[0];
     return { ...doc.data(), id: doc.id } as ScheduleEntry;
+  }
+
+  async addSchedule({ meetingId, userId, intervals }: AddScheduleArgs) {
+    const newRef = await this.repo.add({
+      meetingId,
+      userId,
+      intervals: intervals.map(({ beg, end }) => ({ beg, end })),
+    });
+    return { meetingId, userId, intervals, id: newRef.id } as ScheduleEntry;
   }
 }

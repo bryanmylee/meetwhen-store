@@ -14,9 +14,9 @@ import {
   Root,
 } from 'type-graphql';
 import { Inject, Service } from 'typedi';
+import { Principal } from '../security/context';
 import { ScheduleService } from './service';
 import { Schedule } from './types';
-import { Principal } from '../security/context';
 
 @ArgsType()
 class GetScheduleArgs {
@@ -45,7 +45,6 @@ class IntervalInput {
   end: number;
 }
 
-
 @Service()
 @Resolver(Schedule)
 export class ScheduleResolver implements ResolverInterface<Schedule> {
@@ -61,10 +60,17 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
   intervals(@Root() { intervals }: Schedule) {
     return intervals;
   }
-  
+
   @Mutation((returns) => Schedule)
   @Authorized()
-  joinMeeting(@Args() { meetingId, intervals }: JoinMeetingArgs, @Ctx('principal') principal: Principal) {
-    console.log({ meetingId, intervals, principal });
+  joinMeeting(
+    @Args() { meetingId, intervals }: JoinMeetingArgs,
+    @Ctx('principal') principal: Principal
+  ) {
+    return this.scheduleService.joinMeeting({
+      meetingId,
+      intervals,
+      userId: principal?.uid as string,
+    });
   }
 }
