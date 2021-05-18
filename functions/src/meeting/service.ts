@@ -26,7 +26,7 @@ export class MeetingService {
   async findBySlug(slug: string) {
     return this.repo.findBySlug(slug);
   }
-  
+
   async findAllByOwnerId(ownerId: string) {
     return this.repo.findAllByOwnerId(ownerId);
   }

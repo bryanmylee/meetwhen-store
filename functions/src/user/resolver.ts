@@ -1,7 +1,5 @@
 import { Length } from 'class-validator';
 import { Response } from 'express';
-import { MeetingService } from '../meeting/service';
-import { Meeting } from '../meeting/types';
 import {
   Arg,
   Authorized,
@@ -15,6 +13,8 @@ import {
   Root,
 } from 'type-graphql';
 import { Inject, Service } from 'typedi';
+import { MeetingService } from '../meeting/service';
+import { Meeting } from '../meeting/types';
 import { ScheduleService } from '../schedule/service';
 import { Schedule } from '../schedule/types';
 import { Principal } from '../security/context';
@@ -50,7 +50,7 @@ class LoginInput implements Partial<User> {
 export class UserResolver {
   @Inject()
   private userService: UserService;
-  
+
   @Inject()
   private meetingService: MeetingService;
 
@@ -71,7 +71,7 @@ export class UserResolver {
       email: principal!.email,
     } as User;
   }
-  
+
   @FieldResolver()
   async meetings(@Root() user: User) {
     return (await this.meetingService.findAllByOwnerId(user.id)) as Meeting[];

@@ -1,5 +1,5 @@
-import { Meeting } from '../meeting/types';
 import { Field, ObjectType } from 'type-graphql';
+import { Meeting } from '../meeting/types';
 import { Schedule } from '../schedule/types';
 import { Identifiable } from '../types/identifiable';
 
@@ -10,7 +10,7 @@ export class User extends Identifiable {
 
   @Field()
   email: string;
-  
+
   @Field((type) => [Meeting])
   meetings: Meeting[];
 
