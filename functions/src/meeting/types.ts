@@ -11,7 +11,7 @@ export class Meeting extends Identifiable {
   @Field()
   slug: string;
 
-  @Field()
+  @Field({ nullable: true })
   owner?: User;
   ownerId?: string;
 

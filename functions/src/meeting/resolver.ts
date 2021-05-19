@@ -75,9 +75,9 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   }
 
   @FieldResolver()
-  async owner(@Root() meeting: Meeting): Promise<User> {
+  async owner(@Root() meeting: Meeting): Promise<User | undefined> {
     if (meeting.ownerId === undefined) {
-      throw new HttpsError('invalid-argument', `meeting(id=${meeting.id}) no owner`);
+      return undefined;
     }
     return (await this.userService.findById(meeting.ownerId)) as User;
   }
