@@ -1,10 +1,9 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { signInWithEmailAndPassword, User } from 'firebase/auth';
-import { Inject, Service } from 'typedi';
+import { Service } from 'typedi';
 import { auth } from '../firebase/auth';
 import { firebaseAdmin } from '../firebase/setup';
-import { UserRepo } from './repo';
-import { UserEntry } from './types';
+import { UserShallow } from './types';
 
 class AddNewArgs {
   name: string;
@@ -26,41 +25,52 @@ class LoginArgs {
 
 @Service()
 export class UserService {
-  @Inject()
-  private repo: UserRepo;
-
-  async findById(id: string): Promise<UserEntry> {
-    return this.repo.findById(id);
+  async findById(id: string): Promise<UserShallow> {
+    try {
+      const record = await firebaseAdmin.auth().getUser(id);
+      return {
+        id: record.uid,
+        email: record.email!,
+        name: record.displayName!,
+      };
+    } catch {
+      throw new HttpsError('not-found', `user(id=${id}) not found`);
+    }
   }
 
-  async addNew({ name, email, password }: AddNewArgs): Promise<UserEntry> {
-    const entry = await this.repo.addNew({ name, email });
+  async addNew({ name, email, password }: AddNewArgs): Promise<UserShallow> {
     try {
-      await firebaseAdmin.auth().createUser({
-        uid: entry.id,
+      const record = await firebaseAdmin.auth().createUser({
         displayName: name,
         email,
         password: password,
       });
+      return {
+        id: record.uid,
+        email: record.email!,
+        name: record.displayName!,
+      };
     } catch {
-      this.repo.deleteById(entry.id);
-      throw new HttpsError('already-exists', `user(email=${email} already exists)`);
+      throw new HttpsError('already-exists', `user(email=${email}) already exists`);
     }
-    return entry;
   }
 
-  async edit({ id, ...args }: EditArgs): Promise<UserEntry> {
+  async edit({ id, ...args }: EditArgs): Promise<UserShallow> {
     try {
-      await firebaseAdmin.auth().updateUser(id, {
-        displayName: args.name,
+      const record = await firebaseAdmin.auth().updateUser(id, {
         email: args.email,
+        displayName: args.name,
         password: args.password,
       });
+      return {
+        id: record.uid,
+        email: record.email!,
+        name: record.displayName!,
+      };
     } catch (error) {
       console.log(error);
       throw new HttpsError('internal', `user(id=${id}) update failed`);
     }
-    return await this.repo.edit({ id, ...args });
   }
 
   async login({ email, password }: LoginArgs): Promise<User> {

@@ -4,13 +4,16 @@ import { Schedule } from '../schedule/types';
 import { Identifiable } from '../types/identifiable';
 
 @ObjectType()
-export class User extends Identifiable {
+export class UserShallow extends Identifiable {
   @Field()
   name: string;
 
   @Field()
   email: string;
+}
 
+@ObjectType()
+export class User extends UserShallow {
   @Field(() => [Meeting])
   meetings: Meeting[];
 
@@ -18,7 +21,4 @@ export class User extends Identifiable {
   schedules: Schedule[];
 }
 
-export class UserEntry extends Identifiable {
-  name: string;
-  email: string;
-}
+export class UserEntry extends Identifiable {}
