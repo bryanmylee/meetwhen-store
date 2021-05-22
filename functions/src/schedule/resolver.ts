@@ -1,4 +1,5 @@
 import {
+  Arg,
   Args,
   ArgsType,
   Authorized,
@@ -6,6 +7,7 @@ import {
   Field,
   FieldResolver,
   ID,
+  InputType,
   Mutation,
   Query,
   Resolver,
@@ -31,8 +33,8 @@ class GetScheduleArgs {
   userId: string;
 }
 
-@ArgsType()
-class JoinMeetingArgs {
+@InputType()
+class JoinMeetingInput {
   @Field(() => ID)
   meetingId: string;
 
@@ -75,7 +77,7 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
   @Mutation(() => Schedule)
   @Authorized()
   async joinMeeting(
-    @Args() { meetingId, intervals }: JoinMeetingArgs,
+    @Arg('data') { meetingId, intervals }: JoinMeetingInput,
     @Ctx('principal') principal: Principal
   ): Promise<Schedule> {
     return (await this.scheduleService.joinMeeting({
