@@ -18,10 +18,11 @@ import { Inject, Service } from 'typedi';
 import { MeetingService } from '../meeting/service';
 import { Meeting } from '../meeting/types';
 import { Principal } from '../security/context';
+import { Interval } from '../types/interval';
 import { UserService } from '../user/service';
 import { User } from '../user/types';
 import { ScheduleService } from './service';
-import { Interval, Schedule } from './types';
+import { Schedule } from './types';
 
 @ArgsType()
 class GetScheduleArgs {

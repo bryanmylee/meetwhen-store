@@ -1,6 +1,7 @@
-import { Field, Int, ObjectType } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 import { Meeting } from '../meeting/types';
 import { Identifiable } from '../types/identifiable';
+import { Interval } from '../types/interval';
 import { User } from '../user/types';
 
 @ObjectType()
@@ -21,13 +22,4 @@ export class ScheduleEntry extends Identifiable {
   meetingId: string;
   userId: string;
   intervals: Interval[];
-}
-
-@ObjectType()
-export class Interval {
-  @Field(() => Int)
-  beg: number;
-
-  @Field(() => Int)
-  end: number;
 }
