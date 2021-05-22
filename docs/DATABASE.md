@@ -33,14 +33,18 @@ interface Database {
   meeting: {
     [id: string]: {
       name: string
-      ownerId?: string   // references user.id
+      ownerId?: string  // references user.id
+      intervals: {      // represents selectable intervals
+        beg: number
+        end: number
+      }[]
     }
   }
   schedule: {
     [id: string]: {
-      meetingId: string  // references meeting.id
-      userId: string     // references user.id
-      intervals: {
+      meetingId: string // references meeting.id
+      userId: string    // references user.id
+      intervals: {      // represents user selections
         beg: number
         end: number
       }[]
