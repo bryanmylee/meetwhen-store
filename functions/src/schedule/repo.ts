@@ -1,7 +1,8 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Service } from 'typedi';
 import { Repo } from '../firebase/repo';
-import { Interval, ScheduleEntry } from './types';
+import { Interval } from '../types/interval';
+import { ScheduleEntry } from './types';
 
 class FindByMeetingUserArgs {
   meetingId: string;
