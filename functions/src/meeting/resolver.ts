@@ -20,7 +20,7 @@ import { Inject, Service } from 'typedi';
 import { ScheduleService } from '../schedule/service';
 import { Schedule } from '../schedule/types';
 import { Principal } from '../security/context';
-import { Interval } from '../types/interval';
+import { Interval, IntervalInput } from '../types/interval';
 import { UserService } from '../user/service';
 import { User } from '../user/types';
 import { MeetingService } from './service';
@@ -40,6 +40,9 @@ class AddMeetingInput implements Partial<Meeting> {
   @Field()
   @Length(1, 50)
   name: string;
+
+  @Field(() => [IntervalInput])
+  intervals: IntervalInput[];
 }
 
 @InputType()

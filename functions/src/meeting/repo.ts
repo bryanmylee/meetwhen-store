@@ -1,12 +1,14 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Service } from 'typedi';
 import { Repo } from '../firebase/repo';
+import { IntervalInput } from '../types/interval';
 import { MeetingEntry } from './types';
 
 class AddNewArgs {
   name: string;
   slug: string;
   ownerId?: string;
+  intervals: IntervalInput[];
 }
 
 class EditArgs {
@@ -38,7 +40,10 @@ export class MeetingRepo extends Repo<MeetingEntry> {
 
   async addNew(newMeeting: AddNewArgs): Promise<MeetingEntry> {
     const newRef = this.repo.doc();
-    await newRef.set({ ...newMeeting });
+    await newRef.set({
+      ...newMeeting,
+      intervals: newMeeting.intervals.map(({ beg, end }) => ({ beg, end })),
+    });
     return { ...newMeeting, id: newRef.id } as MeetingEntry;
   }
 

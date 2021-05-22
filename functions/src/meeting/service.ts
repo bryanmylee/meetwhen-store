@@ -1,6 +1,7 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { nanoid } from 'nanoid';
 import { Inject, Service } from 'typedi';
+import { IntervalInput } from '../types/interval';
 import { MeetingRepo } from './repo';
 import { MeetingEntry } from './types';
 
@@ -9,6 +10,7 @@ const MAX_ATTEMPTS = 5;
 class AddNewArgs {
   name: string;
   ownerId?: string;
+  intervals: IntervalInput[];
 }
 
 class EditArgs {

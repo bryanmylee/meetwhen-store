@@ -6,8 +6,6 @@ import {
   Field,
   FieldResolver,
   ID,
-  InputType,
-  Int,
   Mutation,
   Query,
   Resolver,
@@ -18,7 +16,7 @@ import { Inject, Service } from 'typedi';
 import { MeetingService } from '../meeting/service';
 import { Meeting } from '../meeting/types';
 import { Principal } from '../security/context';
-import { Interval } from '../types/interval';
+import { Interval, IntervalInput } from '../types/interval';
 import { UserService } from '../user/service';
 import { User } from '../user/types';
 import { ScheduleService } from './service';
@@ -40,15 +38,6 @@ class JoinMeetingArgs {
 
   @Field(() => [IntervalInput])
   intervals: IntervalInput[];
-}
-
-@InputType()
-class IntervalInput {
-  @Field(() => Int)
-  beg: number;
-
-  @Field(() => Int)
-  end: number;
 }
 
 @Service()
