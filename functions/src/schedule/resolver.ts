@@ -76,11 +76,11 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
 
   @Mutation(() => Schedule)
   @Authorized()
-  async joinMeeting(
+  async addSchedule(
     @Arg('data') { meetingId, intervals }: JoinMeetingInput,
     @Ctx('principal') principal: Principal
   ): Promise<Schedule> {
-    return (await this.scheduleService.joinMeeting({
+    return (await this.scheduleService.addSchedule({
       meetingId,
       intervals,
       userId: principal!.uid,

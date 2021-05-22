@@ -10,7 +10,7 @@ class FindByMeetingUserArgs {
   userId: string;
 }
 
-class JoinMeetingArgs {
+class AddScheduleArgs {
   meetingId: string;
   userId: string;
   intervals: IntervalInput[];
@@ -45,7 +45,7 @@ export class ScheduleService {
     return this.scheduleRepo.findAllWithUserId(userId);
   }
 
-  async joinMeeting({ meetingId, userId, intervals }: JoinMeetingArgs): Promise<ScheduleEntry> {
+  async addSchedule({ meetingId, userId, intervals }: AddScheduleArgs): Promise<ScheduleEntry> {
     // check if meeting exists
     await this.meetingService.findById(meetingId);
     if (await this.meetingUserExists({ meetingId, userId })) {
