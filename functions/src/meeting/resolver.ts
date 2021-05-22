@@ -20,6 +20,7 @@ import { Inject, Service } from 'typedi';
 import { ScheduleService } from '../schedule/service';
 import { Schedule } from '../schedule/types';
 import { Principal } from '../security/context';
+import { Interval } from '../types/interval';
 import { UserService } from '../user/service';
 import { User } from '../user/types';
 import { MeetingService } from './service';
@@ -80,6 +81,11 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
       return undefined;
     }
     return (await this.userService.findById(meeting.ownerId)) as User;
+  }
+
+  @FieldResolver()
+  intervals(@Root() { intervals }: Meeting): Interval[] {
+    return intervals;
   }
 
   @FieldResolver()
