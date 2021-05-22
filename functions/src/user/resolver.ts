@@ -37,6 +37,20 @@ class AddUserInput implements Partial<User> {
 }
 
 @InputType()
+class EditUserInput implements Partial<User> {
+  @Field({ nullable: true })
+  @Length(3, 30)
+  name?: string;
+
+  @Field({ nullable: true })
+  email?: string;
+
+  @Field({ nullable: true })
+  @Length(6, 30)
+  password?: string;
+}
+
+@InputType()
 class LoginInput implements Partial<User> {
   @Field()
   email: string;
@@ -87,6 +101,15 @@ export class UserResolver {
   async addUser(@Arg('data') data: AddUserInput, @Ctx('res') res: Response): Promise<User> {
     await this.userService.addNew(data);
     return this.login(data, res);
+  }
+
+  @Mutation(() => User)
+  @Authorized()
+  async editUser(
+    @Arg('data') data: EditUserInput,
+    @Ctx('principal') principal: Principal
+  ): Promise<User> {
+    return (await this.userService.edit({ id: principal!.uid, ...data })) as User;
   }
 
   @Mutation(() => User)

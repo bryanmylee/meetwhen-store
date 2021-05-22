@@ -8,6 +8,12 @@ class AddNewArgs {
   email: string;
 }
 
+class EditArgs {
+  id: string;
+  name?: string;
+  password?: string;
+}
+
 @Service()
 export class UserRepo extends Repo<UserEntry> {
   constructor() {
@@ -17,6 +23,11 @@ export class UserRepo extends Repo<UserEntry> {
   async addNew({ name, email }: AddNewArgs): Promise<UserEntry> {
     const newRef = await this.repo.add({ name, email });
     return { id: newRef.id, name, email } as UserEntry;
+  }
+
+  async edit({ id, ...args }: EditArgs): Promise<UserEntry> {
+    await this.repo.doc(id).update({ ...args });
+    return this.findById(id);
   }
 
   async deleteById(id: string): Promise<FirebaseFirestore.WriteResult> {

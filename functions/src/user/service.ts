@@ -12,6 +12,13 @@ class AddNewArgs {
   password: string;
 }
 
+class EditArgs {
+  id: string;
+  name?: string;
+  email?: string;
+  password?: string;
+}
+
 class LoginArgs {
   email: string;
   password: string;
@@ -35,11 +42,25 @@ export class UserService {
         email,
         password: password,
       });
-    } catch (error) {
+    } catch {
       this.repo.deleteById(entry.id);
       throw new HttpsError('already-exists', `user(email=${email} already exists)`);
     }
     return entry;
+  }
+
+  async edit({ id, ...args }: EditArgs): Promise<UserEntry> {
+    try {
+      await firebaseAdmin.auth().updateUser(id, {
+        displayName: args.name,
+        email: args.email,
+        password: args.password,
+      });
+    } catch (error) {
+      console.log(error);
+      throw new HttpsError('internal', `user(id=${id}) update failed`);
+    }
+    return await this.repo.edit({ id, ...args });
   }
 
   async login({ email, password }: LoginArgs): Promise<User> {
