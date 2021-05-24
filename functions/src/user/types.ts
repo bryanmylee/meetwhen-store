@@ -10,6 +10,9 @@ export class UserShallow extends Identifiable {
 
   @Field()
   email: string;
+
+  @Field(() => Boolean)
+  isGuest = false;
 }
 
 @ObjectType()

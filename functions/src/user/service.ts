@@ -9,6 +9,7 @@ class AddNewArgs {
   name: string;
   email: string;
   password: string;
+  isGuest?: boolean;
 }
 
 class EditArgs {
@@ -28,27 +29,34 @@ export class UserService {
   async findById(id: string): Promise<UserShallow> {
     try {
       const record = await firebaseAdmin.auth().getUser(id);
+      const isGuest = record.customClaims?.isGuest ?? false;
       return {
         id: record.uid,
         email: record.email!,
         name: record.displayName!,
+        isGuest,
       };
     } catch (error) {
       throw handleError(error);
     }
   }
 
-  async addNew({ name, email, password }: AddNewArgs): Promise<UserShallow> {
+  async addNew({ name, email, password, isGuest }: AddNewArgs): Promise<UserShallow> {
     try {
+      if (isGuest === undefined) {
+        isGuest = false;
+      }
       const record = await firebaseAdmin.auth().createUser({
         displayName: name,
         email,
         password: password,
       });
+      firebaseAdmin.auth().setCustomUserClaims(record.uid, { isGuest });
       return {
         id: record.uid,
         email: record.email!,
         name: record.displayName!,
+        isGuest,
       };
     } catch (error) {
       throw handleError(error);
@@ -66,6 +74,7 @@ export class UserService {
         id: record.uid,
         email: record.email!,
         name: record.displayName!,
+        isGuest: false,
       };
     } catch (error) {
       throw handleError(error);

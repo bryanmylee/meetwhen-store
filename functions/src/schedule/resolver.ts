@@ -34,12 +34,21 @@ class GetScheduleArgs {
 }
 
 @InputType()
-class JoinMeetingInput {
+class AddScheduleInput {
   @Field(() => ID)
   meetingId: string;
 
   @Field(() => [IntervalInput])
   intervals: IntervalInput[];
+}
+
+@InputType()
+class AddGuestScheduleInput extends AddScheduleInput {
+  @Field()
+  username: string;
+
+  @Field()
+  password: string;
 }
 
 @Service()
@@ -77,13 +86,31 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
   @Mutation(() => Schedule)
   @Authorized()
   async addSchedule(
-    @Arg('data') { meetingId, intervals }: JoinMeetingInput,
+    @Arg('data') { meetingId, intervals }: AddScheduleInput,
     @Ctx('principal') principal: Principal
   ): Promise<Schedule> {
     return (await this.scheduleService.addSchedule({
       meetingId,
       intervals,
       userId: principal!.uid,
+    })) as Schedule;
+  }
+
+  @Mutation(() => Schedule)
+  async addGuestSchedule(
+    @Arg('data') { username, password, meetingId, intervals }: AddGuestScheduleInput
+  ): Promise<Schedule> {
+    const guestEmail = `${username}@${meetingId}.guest`;
+    const guestUser = await this.userService.addNew({
+      name: username,
+      email: guestEmail,
+      password,
+      isGuest: true,
+    });
+    return (await this.scheduleService.addSchedule({
+      meetingId,
+      intervals,
+      userId: guestUser.id,
     })) as Schedule;
   }
 }
