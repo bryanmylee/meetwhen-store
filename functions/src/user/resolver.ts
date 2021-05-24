@@ -60,6 +60,19 @@ class LoginInput implements Partial<User> {
   password: string;
 }
 
+@InputType()
+class LoginGuestInput {
+  @Field(() => ID)
+  meetingId: string;
+
+  @Field()
+  username: string;
+
+  @Field()
+  @Length(6, 30)
+  password: string;
+}
+
 @Service()
 @Resolver(User)
 export class UserResolver {
@@ -118,6 +131,16 @@ export class UserResolver {
     const token = await user.getIdToken();
     res.setHeader('cache-control', 'private');
     res.cookie('__session', token, { httpOnly: true });
+    return {
+      id: user.uid,
+      name: user.displayName,
+      email: user.email,
+    } as User;
+  }
+
+  @Mutation(() => User)
+  async loginGuest(@Arg('data') data: LoginGuestInput): Promise<User> {
+    const user = await this.userService.loginGuest(data);
     return {
       id: user.uid,
       name: user.displayName,

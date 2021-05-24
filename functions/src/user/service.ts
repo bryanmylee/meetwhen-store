@@ -72,11 +72,10 @@ export class UserService {
   }
 
   async addNewGuest({ username, password, meetingId }: AddNewGuestArgs): Promise<UserShallow> {
-    const guestEmail = `${username}@${meetingId}.guest`;
     try {
       const record = await firebaseAdmin.auth().createUser({
         displayName: username,
-        email: guestEmail,
+        email: getGuestEmail(meetingId, username),
         password: password,
       });
       firebaseAdmin.auth().setCustomUserClaims(record.uid, { isGuest: true });
@@ -117,6 +116,16 @@ export class UserService {
       throw handleError(error);
     }
   }
+
+  async loginGuest({ meetingId, username, password }: LoginGuestArgs): Promise<User> {
+    const email = getGuestEmail(meetingId, username);
+    try {
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      return user;
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
 }
 
 const handleError = ({ message, code }: AuthError) => {
@@ -134,3 +143,5 @@ const handleError = ({ message, code }: AuthError) => {
   }
   throw new HttpsError('internal', message, { id: code });
 };
+
+const getGuestEmail = (meetingId: string, username: string) => `${username}@${meetingId}.guest`;
