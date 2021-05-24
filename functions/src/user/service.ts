@@ -1,5 +1,5 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { signInWithEmailAndPassword, User } from 'firebase/auth';
+import { AuthError, signInWithEmailAndPassword, User } from 'firebase/auth';
 import { Service } from 'typedi';
 import { auth } from '../firebase/auth';
 import { firebaseAdmin } from '../firebase/setup';
@@ -33,8 +33,8 @@ export class UserService {
         email: record.email!,
         name: record.displayName!,
       };
-    } catch {
-      throw new HttpsError('not-found', `user(id=${id}) not found`);
+    } catch (error) {
+      throw handleError(error);
     }
   }
 
@@ -50,8 +50,8 @@ export class UserService {
         email: record.email!,
         name: record.displayName!,
       };
-    } catch {
-      throw new HttpsError('already-exists', `user(email=${email}) already exists`);
+    } catch (error) {
+      throw handleError(error);
     }
   }
 
@@ -68,13 +68,32 @@ export class UserService {
         name: record.displayName!,
       };
     } catch (error) {
-      console.log(error);
-      throw new HttpsError('internal', `user(id=${id}) update failed`);
+      throw handleError(error);
     }
   }
 
   async login({ email, password }: LoginArgs): Promise<User> {
-    const { user } = await signInWithEmailAndPassword(auth, email, password);
-    return user;
+    try {
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      return user;
+    } catch (error) {
+      throw handleError(error);
+    }
   }
 }
+
+const handleError = ({ message, code }: AuthError) => {
+  if (code === 'auth/too-many-requests') {
+    new HttpsError('permission-denied', message, { id: 'too-many-requests' });
+  }
+  if (code === 'auth/wrong-password') {
+    throw new HttpsError('permission-denied', `wrong password`, { id: 'wrong-password' });
+  }
+  if (code === 'auth/user-not-found') {
+    throw new HttpsError('not-found', message, { id: 'not-found' });
+  }
+  if (code === 'auth/email-already-exists') {
+    throw new HttpsError('already-exists', message, { id: 'already-exists' });
+  }
+  throw new HttpsError('internal', message, { id: code });
+};
