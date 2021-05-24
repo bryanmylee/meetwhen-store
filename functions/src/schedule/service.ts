@@ -10,7 +10,7 @@ class FindByMeetingUserArgs {
   userId: string;
 }
 
-class AddScheduleArgs {
+class ScheduleArgs {
   meetingId: string;
   userId: string;
   intervals: IntervalInput[];
@@ -46,7 +46,7 @@ export class ScheduleService {
     return this.scheduleRepo.findAllWithUserId(userId);
   }
 
-  async addSchedule({ meetingId, userId, intervals }: AddScheduleArgs): Promise<ScheduleEntry> {
+  async addSchedule({ meetingId, userId, intervals }: ScheduleArgs): Promise<ScheduleEntry> {
     // check if meeting exists
     await this.meetingService.findById(meetingId);
     return this.scheduleRepo.addSchedule({ meetingId, userId, intervals });
@@ -66,5 +66,11 @@ export class ScheduleService {
       meetingId,
     });
     return this.scheduleRepo.addSchedule({ meetingId, userId: guestUser.id, intervals });
+  }
+
+  async editSchedule({ meetingId, userId, intervals }: ScheduleArgs): Promise<ScheduleEntry> {
+    // check if meeting exists
+    await this.meetingService.findById(meetingId);
+    return this.scheduleRepo.editSchedule({ meetingId, userId, intervals });
   }
 }

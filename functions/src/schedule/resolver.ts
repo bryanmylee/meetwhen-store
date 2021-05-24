@@ -34,7 +34,7 @@ class GetScheduleArgs {
 }
 
 @InputType()
-class AddScheduleInput {
+class ScheduleInput {
   @Field(() => ID)
   meetingId: string;
 
@@ -43,12 +43,18 @@ class AddScheduleInput {
 }
 
 @InputType()
-class AddGuestScheduleInput extends AddScheduleInput {
+class AddGuestScheduleInput extends ScheduleInput {
   @Field()
   username: string;
 
   @Field()
   password: string;
+}
+
+@InputType()
+class EditGuestScheduleInput extends ScheduleInput {
+  @Field()
+  userId: string;
 }
 
 @Service()
@@ -86,7 +92,7 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
   @Mutation(() => Schedule)
   @Authorized()
   async addSchedule(
-    @Arg('data') { meetingId, intervals }: AddScheduleInput,
+    @Arg('data') { meetingId, intervals }: ScheduleInput,
     @Ctx('principal') principal: Principal
   ): Promise<Schedule> {
     return (await this.scheduleService.addSchedule({
@@ -105,6 +111,30 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
       intervals,
       username,
       password,
+    })) as Schedule;
+  }
+
+  @Mutation(() => Schedule)
+  @Authorized()
+  async editSchedule(
+    @Arg('data') { meetingId, intervals }: ScheduleInput,
+    @Ctx('principal') principal: Principal
+  ): Promise<Schedule> {
+    return (await this.scheduleService.editSchedule({
+      meetingId,
+      intervals,
+      userId: principal!.uid,
+    })) as Schedule;
+  }
+
+  @Mutation(() => Schedule)
+  async editGuestSchedule(
+    @Arg('data') { meetingId, userId, intervals }: EditGuestScheduleInput
+  ): Promise<Schedule> {
+    return (await this.scheduleService.editSchedule({
+      meetingId,
+      intervals,
+      userId,
     })) as Schedule;
   }
 }
