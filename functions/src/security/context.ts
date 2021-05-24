@@ -15,9 +15,17 @@ export type Context = ExpressContext & { principal: Principal };
  */
 export const context: ContextFunction<ExpressContext, unknown> = async ({ req, res }) => {
   try {
-    const principal: Principal = await firebaseAdmin.auth().verifyIdToken(req.cookies.__session);
+    const idToken = req.cookies.__session ?? getBearerToken(req.headers.authorization) ?? '';
+    const principal: Principal = await firebaseAdmin.auth().verifyIdToken(idToken);
     return { req, res, principal } as Context;
   } catch (error) {
     return { req, res, principal: null } as Context;
   }
+};
+
+const getBearerToken = (authorization: string | undefined) => {
+  if (authorization === undefined) {
+    return undefined;
+  }
+  return authorization.replace(/Bearer\s/, '');
 };
