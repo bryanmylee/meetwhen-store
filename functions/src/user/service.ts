@@ -9,7 +9,12 @@ class AddNewArgs {
   name: string;
   email: string;
   password: string;
-  isGuest?: boolean;
+}
+
+class AddNewGuestArgs {
+  meetingId: string;
+  username: string;
+  password: string;
 }
 
 class EditArgs {
@@ -21,6 +26,12 @@ class EditArgs {
 
 class LoginArgs {
   email: string;
+  password: string;
+}
+
+class LoginGuestArgs {
+  meetingId: string;
+  username: string;
   password: string;
 }
 
@@ -41,22 +52,39 @@ export class UserService {
     }
   }
 
-  async addNew({ name, email, password, isGuest }: AddNewArgs): Promise<UserShallow> {
+  async addNew({ name, email, password }: AddNewArgs): Promise<UserShallow> {
     try {
-      if (isGuest === undefined) {
-        isGuest = false;
-      }
       const record = await firebaseAdmin.auth().createUser({
         displayName: name,
         email,
         password: password,
       });
-      firebaseAdmin.auth().setCustomUserClaims(record.uid, { isGuest });
+      firebaseAdmin.auth().setCustomUserClaims(record.uid, { isGuest: false });
       return {
         id: record.uid,
         email: record.email!,
         name: record.displayName!,
-        isGuest,
+        isGuest: false,
+      };
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
+  async addNewGuest({ username, password, meetingId }: AddNewGuestArgs): Promise<UserShallow> {
+    const guestEmail = `${username}@${meetingId}.guest`;
+    try {
+      const record = await firebaseAdmin.auth().createUser({
+        displayName: username,
+        email: guestEmail,
+        password: password,
+      });
+      firebaseAdmin.auth().setCustomUserClaims(record.uid, { isGuest: true });
+      return {
+        id: record.uid,
+        email: record.email!,
+        name: record.displayName!,
+        isGuest: true,
       };
     } catch (error) {
       throw handleError(error);

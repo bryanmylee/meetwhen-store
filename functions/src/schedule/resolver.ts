@@ -100,12 +100,10 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
   async addGuestSchedule(
     @Arg('data') { username, password, meetingId, intervals }: AddGuestScheduleInput
   ): Promise<Schedule> {
-    const guestEmail = `${username}@${meetingId}.guest`;
-    const guestUser = await this.userService.addNew({
-      name: username,
-      email: guestEmail,
+    const guestUser = await this.userService.addNewGuest({
+      meetingId,
+      username,
       password,
-      isGuest: true,
     });
     return (await this.scheduleService.addSchedule({
       meetingId,
