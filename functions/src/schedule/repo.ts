@@ -9,7 +9,7 @@ class FindByMeetingUserArgs {
   userId: string;
 }
 
-class AddScheduleArgs {
+class ScheduleArgs {
   meetingId: string;
   userId: string;
   intervals: Interval[];
@@ -54,7 +54,7 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
     return results.docs.map((doc) => ({ ...doc.data(), id: doc.id } as ScheduleEntry));
   }
 
-  async addSchedule({ meetingId, userId, intervals }: AddScheduleArgs): Promise<ScheduleEntry> {
+  async addSchedule({ meetingId, userId, intervals }: ScheduleArgs): Promise<ScheduleEntry> {
     const results = await this.repo
       .where('meetingId', '==', meetingId)
       .where('userId', '==', userId)
@@ -70,5 +70,30 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
       intervals: intervals.map(({ beg, end }) => ({ beg, end })),
     });
     return { meetingId, userId, intervals, id: newRef.id } as ScheduleEntry;
+  }
+
+  async editSchedule({ meetingId, userId, intervals }: ScheduleArgs): Promise<ScheduleEntry> {
+    const results = await this.repo
+      .where('meetingId', '==', meetingId)
+      .where('userId', '==', userId)
+      .get();
+    if (results.docs.length > 1) {
+      throw new HttpsError('internal', `schedule(meetingId=${meetingId}) not unique`, {
+        id: 'not-unique',
+      });
+    }
+    if (results.docs.length === 0) {
+      throw new HttpsError('not-found', `schedule(meetingId=${meetingId}) not found`, {
+        id: 'not-found',
+      });
+    }
+    const { ref } = results.docs[0];
+    await ref.set(
+      {
+        intervals: intervals.map(({ beg, end }) => ({ beg, end })),
+      },
+      { merge: true }
+    );
+    return { meetingId, userId, intervals, id: ref.id } as ScheduleEntry;
   }
 }
