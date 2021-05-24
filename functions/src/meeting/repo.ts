@@ -24,10 +24,14 @@ export class MeetingRepo extends Repo<MeetingEntry> {
   async findBySlug(slug: string): Promise<MeetingEntry> {
     const results = await this.repo.where('slug', '==', slug).get();
     if (results.docs.length > 1) {
-      throw new HttpsError('internal', `meeting(slug=${slug}) not unique`);
+      throw new HttpsError('internal', `meeting(slug=${slug}) not unique`, {
+        id: 'not-unique',
+      });
     }
     if (results.docs.length === 0) {
-      throw new HttpsError('not-found', `meeting(slug=${slug}) not found`);
+      throw new HttpsError('not-found', `meeting(slug=${slug}) not found`, {
+        id: 'not-found',
+      });
     }
     const doc = results.docs[0];
     return { ...doc.data(), id: doc.id } as MeetingEntry;

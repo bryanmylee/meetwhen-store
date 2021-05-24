@@ -29,13 +29,15 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
     if (results.docs.length > 1) {
       throw new HttpsError(
         'internal',
-        `schedule(meetingId=${meetingId}, userId=${userId}) not unique`
+        `schedule(meetingId=${meetingId}, userId=${userId}) not unique`,
+        { id: 'not-unique' }
       );
     }
     if (results.docs.length === 0) {
       throw new HttpsError(
         'not-found',
-        `schedule(meetingId=${meetingId}, userId=${userId}) not found`
+        `schedule(meetingId=${meetingId}, userId=${userId}) not found`,
+        { id: 'not-found' }
       );
     }
     const doc = results.docs[0];
@@ -53,6 +55,15 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
   }
 
   async addSchedule({ meetingId, userId, intervals }: AddScheduleArgs): Promise<ScheduleEntry> {
+    const results = await this.repo
+      .where('meetingId', '==', meetingId)
+      .where('userId', '==', userId)
+      .get();
+    if (results.docs.length >= 1) {
+      throw new HttpsError('already-exists', `schedule(meetingId=${meetingId}) already joined`, {
+        id: 'already-exists',
+      });
+    }
     const newRef = await this.repo.add({
       meetingId,
       userId,

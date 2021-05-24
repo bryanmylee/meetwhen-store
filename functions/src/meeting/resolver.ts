@@ -75,7 +75,9 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
     if (slug !== undefined) {
       return (await this.meetingService.findBySlug(slug)) as Meeting;
     }
-    throw new HttpsError('invalid-argument', 'id or slug must be provided');
+    throw new HttpsError('invalid-argument', 'id or slug must be provided', {
+      id: 'invalid-argument',
+    });
   }
 
   @FieldResolver()
@@ -117,11 +119,14 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
     if (meetingEntry.ownerId === undefined) {
       throw new HttpsError(
         'permission-denied',
-        `meeting(id=${id}) has no owner and cannot be edited`
+        `meeting(id=${id}) has no owner and cannot be edited`,
+        { id: 'no-owner' }
       );
     }
     if (principal!.uid !== meetingEntry.ownerId) {
-      throw new HttpsError('permission-denied', `meeting(id=${id}) edit permission denied`);
+      throw new HttpsError('permission-denied', `meeting(id=${id}) edit permission denied`, {
+        id: 'permission-denied',
+      });
     }
     return (await this.meetingService.edit(id, editArgs)) as Meeting;
   }

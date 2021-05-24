@@ -45,7 +45,9 @@ export class MeetingService {
         }
       }
     }
-    throw new HttpsError('internal', 'could not generate new slug');
+    throw new HttpsError('internal', 'could not generate new slug', {
+      id: 'slug-failure',
+    });
   }
 
   async addNew(newMeeting: AddNewArgs): Promise<MeetingEntry> {
