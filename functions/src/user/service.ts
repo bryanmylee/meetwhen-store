@@ -130,18 +130,21 @@ export class UserService {
 
 const handleError = ({ message, code }: AuthError) => {
   if (code === 'auth/too-many-requests') {
-    new HttpsError('permission-denied', message, { id: 'too-many-requests' });
+    new HttpsError('permission-denied', message, { id: 'auth/too-many-requests' });
   }
   if (code === 'auth/wrong-password') {
-    throw new HttpsError('permission-denied', `wrong password`, { id: 'wrong-password' });
+    throw new HttpsError('permission-denied', `wrong password`, { id: 'auth/wrong-password' });
   }
   if (code === 'auth/user-not-found') {
-    throw new HttpsError('not-found', message, { id: 'not-found' });
+    throw new HttpsError('not-found', message, { id: 'auth/user-not-found' });
+  }
+  if (code === 'auth/missing-email') {
+    throw new HttpsError('not-found', message, { id: 'auth/missing-email' });
   }
   if (code === 'auth/email-already-exists') {
-    throw new HttpsError('already-exists', message, { id: 'already-exists' });
+    throw new HttpsError('already-exists', message, { id: 'auth/email-already-exists' });
   }
   throw new HttpsError('internal', message, { id: code });
 };
 
-const getGuestEmail = (meetingId: string, username: string) => `${username}@${meetingId}.guest`;
+const getGuestEmail = (meetingId: string, username: string) => `${username}.${meetingId}@guest`;
