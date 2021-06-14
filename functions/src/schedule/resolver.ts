@@ -133,17 +133,4 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
       userId: principal!.uid,
     })) as Schedule;
   }
-
-  @Mutation(() => Schedule)
-  @Authorized()
-  async editGuestSchedule(
-    @Arg('data') { meetingId, intervals }: EditGuestScheduleInput,
-    @Ctx('principal') principal: Principal
-  ): Promise<Schedule> {
-    return (await this.scheduleService.editSchedule({
-      meetingId,
-      intervals,
-      userId: principal!.uid,
-    })) as Schedule;
-  }
 }
