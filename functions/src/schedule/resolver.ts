@@ -52,12 +52,6 @@ class AddGuestScheduleInput extends ScheduleInput {
   password: string;
 }
 
-@InputType()
-class EditGuestScheduleInput extends ScheduleInput {
-  @Field()
-  userId: string;
-}
-
 @Service()
 @Resolver(Schedule)
 export class ScheduleResolver implements ResolverInterface<Schedule> {
