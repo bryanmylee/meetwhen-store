@@ -40,12 +40,12 @@ export class UserService {
   async findById(id: string): Promise<UserShallow> {
     try {
       const record = await firebaseAdmin.auth().getUser(id);
-      const isGuest = record.customClaims?.isGuest ?? false;
+      const guestOf = record.customClaims?.guestOf;
       return {
         id: record.uid,
         email: record.email!,
         name: record.displayName!,
-        isGuest,
+        guestOf,
       };
     } catch (error) {
       throw handleError(error);
@@ -59,12 +59,12 @@ export class UserService {
         email,
         password: password,
       });
-      firebaseAdmin.auth().setCustomUserClaims(record.uid, { isGuest: false });
+      firebaseAdmin.auth().setCustomUserClaims(record.uid, { guestOf: null });
       return {
         id: record.uid,
         email: record.email!,
         name: record.displayName!,
-        isGuest: false,
+        guestOf: null,
       };
     } catch (error) {
       throw handleError(error);
@@ -78,12 +78,12 @@ export class UserService {
         email: getGuestEmail(meetingId, username),
         password: password,
       });
-      firebaseAdmin.auth().setCustomUserClaims(record.uid, { isGuest: true });
+      firebaseAdmin.auth().setCustomUserClaims(record.uid, { guestOf: true });
       return {
         id: record.uid,
         email: record.email!,
         name: record.displayName!,
-        isGuest: true,
+        guestOf: meetingId,
       };
     } catch (error) {
       throw handleError(error);
@@ -101,7 +101,7 @@ export class UserService {
         id: record.uid,
         email: record.email!,
         name: record.displayName!,
-        isGuest: false,
+        guestOf: null,
       };
     } catch (error) {
       throw handleError(error);
