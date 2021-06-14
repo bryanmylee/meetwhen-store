@@ -31,7 +31,7 @@ const configureServer = async () => {
     app,
     cors: {
       credentials: true,
-      origin: 'http://localhost:3000',
+      origin: [/^https:\/\/meetwhen-\w+-bryanmylee.vercel.app$/, /^https:\/\/[www.]*meetwhen.io$/],
     },
   });
 
