@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import {
   Arg,
   Args,
@@ -104,14 +105,20 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
 
   @Mutation(() => Schedule)
   async addGuestSchedule(
-    @Arg('data') { username, password, meetingId, intervals }: AddGuestScheduleInput
+    @Arg('data') { username, password, meetingId, intervals }: AddGuestScheduleInput,
+    @Ctx('res') res: Response
   ): Promise<Schedule> {
-    return (await this.scheduleService.addGuestSchedule({
+    const { user, scheduleEntry } = await this.scheduleService.addGuestSchedule({
       meetingId,
       intervals,
       username,
       password,
-    })) as Schedule;
+    });
+    const userRecord = await this.userService.login({ email: user.email, password });
+    const token = await userRecord.getIdToken();
+    res.setHeader('cache-control', 'private');
+    res.cookie('__session', token, { httpOnly: true });
+    return scheduleEntry as Schedule;
   }
 
   @Mutation(() => Schedule)

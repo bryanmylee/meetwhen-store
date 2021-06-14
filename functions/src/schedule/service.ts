@@ -1,9 +1,11 @@
+import { UserShallow } from '../user/types';
 import { Inject, Service } from 'typedi';
 import { MeetingService } from '../meeting/service';
 import { IntervalInput } from '../types/interval';
 import { UserService } from '../user/service';
 import { ScheduleRepo } from './repo';
 import { ScheduleEntry } from './types';
+import { Meeting } from '../meeting/types';
 
 class FindByMeetingUserArgs {
   meetingId: string;
@@ -21,6 +23,12 @@ class AddGuestScheduleArgs {
   intervals: IntervalInput[];
   username: string;
   password: string;
+}
+
+interface AddGuestScheduleReturned {
+  user: UserShallow;
+  meeting: Omit<Meeting, 'schedules'>;
+  scheduleEntry: ScheduleEntry;
 }
 
 @Service()
@@ -57,15 +65,24 @@ export class ScheduleService {
     intervals,
     username,
     password,
-  }: AddGuestScheduleArgs): Promise<ScheduleEntry> {
+  }: AddGuestScheduleArgs): Promise<AddGuestScheduleReturned> {
     // check if meeting exists
-    await this.meetingService.findById(meetingId);
+    const meeting = await this.meetingService.findById(meetingId);
     const guestUser = await this.userService.addNewGuest({
       username,
       password,
       meetingId,
     });
-    return this.scheduleRepo.addSchedule({ meetingId, userId: guestUser.id, intervals });
+    const scheduleEntry = await this.scheduleRepo.addSchedule({
+      meetingId,
+      userId: guestUser.id,
+      intervals,
+    });
+    return {
+      user: guestUser,
+      meeting,
+      scheduleEntry,
+    };
   }
 
   async editSchedule({ meetingId, userId, intervals }: ScheduleArgs): Promise<ScheduleEntry> {
