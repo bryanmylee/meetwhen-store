@@ -1,4 +1,3 @@
-import { firebaseAdmin } from '../firebase/setup';
 import {
   Arg,
   Args,
@@ -17,6 +16,7 @@ import {
   Root,
 } from 'type-graphql';
 import { Inject, Service } from 'typedi';
+import { firebaseAdmin } from '../firebase/setup';
 import { MeetingService } from '../meeting/service';
 import { Meeting } from '../meeting/types';
 import { Principal } from '../security/context';
@@ -112,7 +112,7 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
 
   @Mutation(() => ScheduleWithToken)
   async addGuestSchedule(
-    @Arg('data') { username, password, meetingId, intervals }: AddGuestScheduleInput,
+    @Arg('data') { username, password, meetingId, intervals }: AddGuestScheduleInput
   ): Promise<ScheduleWithToken> {
     const { user, scheduleEntry } = await this.scheduleService.addGuestSchedule({
       meetingId,
@@ -123,7 +123,7 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     const userRecord = await this.userService.login({ email: user.email, password });
     const token = await userRecord.getIdToken();
     return {
-      ...scheduleEntry as Schedule,
+      ...(scheduleEntry as Schedule),
       token,
     };
   }
@@ -143,7 +143,7 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
 
   @Mutation(() => Schedule)
   async editGuestSchedule(
-    @Arg('data') { meetingId, intervals, token }: EditGuestScheduleInput,
+    @Arg('data') { meetingId, intervals, token }: EditGuestScheduleInput
   ): Promise<Schedule> {
     const principal: Principal = await firebaseAdmin.auth().verifyIdToken(token);
     return (await this.scheduleService.editSchedule({

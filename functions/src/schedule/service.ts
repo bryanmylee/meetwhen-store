@@ -1,11 +1,11 @@
-import { UserShallow } from '../user/types';
 import { Inject, Service } from 'typedi';
 import { MeetingService } from '../meeting/service';
+import { Meeting } from '../meeting/types';
 import { IntervalInput } from '../types/interval';
 import { UserService } from '../user/service';
+import { UserShallow } from '../user/types';
 import { ScheduleRepo } from './repo';
 import { ScheduleEntry } from './types';
-import { Meeting } from '../meeting/types';
 
 class FindByMeetingUserArgs {
   meetingId: string;
