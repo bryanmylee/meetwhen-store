@@ -8,6 +8,7 @@ import {
   ID,
   InputType,
   Mutation,
+  ObjectType,
   Query,
   Resolver,
   Root,
@@ -64,6 +65,12 @@ class LoginGuestInput {
 
   @Field()
   password: string;
+}
+
+@ObjectType()
+class UserWithToken extends User {
+  @Field()
+  token: string;
 }
 
 @Service()
@@ -142,17 +149,16 @@ export class UserResolver {
     } as User;
   }
 
-  @Mutation(() => User)
-  async loginGuest(@Arg('data') data: LoginGuestInput, @Ctx('res') res: Response): Promise<User> {
+  @Mutation(() => UserWithToken)
+  async loginGuest(@Arg('data') data: LoginGuestInput): Promise<UserWithToken> {
     const user = await this.userService.loginGuest(data);
     const token = await user.getIdToken();
-    res.setHeader('cache-control', 'private');
-    res.cookie('__session', token, { httpOnly: true });
     return {
       id: user.uid,
       name: user.displayName,
       email: user.email,
-    } as User;
+      token,
+    } as UserWithToken;
   }
 
   @Mutation(() => Boolean)
