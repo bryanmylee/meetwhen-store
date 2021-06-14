@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { firebaseAdmin } from '../firebase/setup';
 import {
   Arg,
   Args,
@@ -10,6 +10,7 @@ import {
   ID,
   InputType,
   Mutation,
+  ObjectType,
   Query,
   Resolver,
   ResolverInterface,
@@ -50,6 +51,18 @@ class AddGuestScheduleInput extends ScheduleInput {
 
   @Field()
   password: string;
+}
+
+@InputType()
+class EditGuestScheduleInput extends ScheduleInput {
+  @Field()
+  token: string;
+}
+
+@ObjectType()
+class ScheduleWithToken extends Schedule {
+  @Field()
+  token: string;
 }
 
 @Service()
@@ -97,11 +110,10 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     })) as Schedule;
   }
 
-  @Mutation(() => Schedule)
+  @Mutation(() => ScheduleWithToken)
   async addGuestSchedule(
     @Arg('data') { username, password, meetingId, intervals }: AddGuestScheduleInput,
-    @Ctx('res') res: Response
-  ): Promise<Schedule> {
+  ): Promise<ScheduleWithToken> {
     const { user, scheduleEntry } = await this.scheduleService.addGuestSchedule({
       meetingId,
       intervals,
@@ -110,9 +122,10 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     });
     const userRecord = await this.userService.login({ email: user.email, password });
     const token = await userRecord.getIdToken();
-    res.setHeader('cache-control', 'private');
-    res.cookie('__session', token, { httpOnly: true });
-    return scheduleEntry as Schedule;
+    return {
+      ...scheduleEntry as Schedule,
+      token,
+    };
   }
 
   @Mutation(() => Schedule)
@@ -121,6 +134,18 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     @Arg('data') { meetingId, intervals }: ScheduleInput,
     @Ctx('principal') principal: Principal
   ): Promise<Schedule> {
+    return (await this.scheduleService.editSchedule({
+      meetingId,
+      intervals,
+      userId: principal!.uid,
+    })) as Schedule;
+  }
+
+  @Mutation(() => Schedule)
+  async editGuestSchedule(
+    @Arg('data') { meetingId, intervals, token }: EditGuestScheduleInput,
+  ): Promise<Schedule> {
+    const principal: Principal = await firebaseAdmin.auth().verifyIdToken(token);
     return (await this.scheduleService.editSchedule({
       meetingId,
       intervals,
