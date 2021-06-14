@@ -90,6 +90,7 @@ export class UserResolver {
       name: principal!.name,
       id: principal!.uid,
       email: principal!.email,
+      isGuest: principal!.email?.endsWith('@guest') ?? false,
     } as User;
   }
 
