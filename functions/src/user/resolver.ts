@@ -132,8 +132,11 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
-  async loginGuest(@Arg('data') data: LoginGuestInput): Promise<User> {
+  async loginGuest(@Arg('data') data: LoginGuestInput, @Ctx('res') res: Response): Promise<User> {
     const user = await this.userService.loginGuest(data);
+    const token = await user.getIdToken();
+    res.setHeader('cache-control', 'private');
+    res.cookie('__session', token, { httpOnly: true });
     return {
       id: user.uid,
       name: user.displayName,
