@@ -1,4 +1,3 @@
-import { Length } from 'class-validator';
 import { Response } from 'express';
 import {
   Arg,
@@ -25,28 +24,24 @@ import { User } from './types';
 @InputType()
 class AddUserInput implements Partial<User> {
   @Field()
-  @Length(3, 30)
   name: string;
 
   @Field()
   email: string;
 
   @Field()
-  @Length(6, 30)
   password: string;
 }
 
 @InputType()
 class EditUserInput implements Partial<User> {
   @Field({ nullable: true })
-  @Length(3, 30)
   name?: string;
 
   @Field({ nullable: true })
   email?: string;
 
   @Field({ nullable: true })
-  @Length(6, 30)
   password?: string;
 }
 
@@ -56,7 +51,6 @@ class LoginInput implements Partial<User> {
   email: string;
 
   @Field()
-  @Length(6, 30)
   password: string;
 }
 
@@ -69,7 +63,6 @@ class LoginGuestInput {
   username: string;
 
   @Field()
-  @Length(6, 30)
   password: string;
 }
 
