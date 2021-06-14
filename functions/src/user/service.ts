@@ -78,7 +78,7 @@ export class UserService {
         email: getGuestEmail(meetingId, username),
         password: password,
       });
-      firebaseAdmin.auth().setCustomUserClaims(record.uid, { guestOf: true });
+      firebaseAdmin.auth().setCustomUserClaims(record.uid, { guestOf: meetingId });
       return {
         id: record.uid,
         email: record.email!,
