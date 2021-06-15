@@ -94,8 +94,8 @@ export class UserResolver {
   @Authorized()
   async me(@Ctx('principal') principal: Principal): Promise<User> {
     const email = principal!.email!;
-    if (email.endsWith('@guest')) {
-      const match = email.match(/\.([\w]+)@guest/);
+    if (email.endsWith('.guest')) {
+      const match = email.match(/@(\w+).guest$/);
       return {
         name: principal!.name,
         id: principal!.uid,

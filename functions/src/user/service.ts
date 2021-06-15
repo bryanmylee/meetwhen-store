@@ -147,4 +147,4 @@ const handleError = ({ message, code }: AuthError) => {
   throw new HttpsError('internal', message, { id: code });
 };
 
-const getGuestEmail = (meetingId: string, username: string) => `${username}.${meetingId}@guest`;
+const getGuestEmail = (meetingId: string, username: string) => `${username}@${meetingId}.guest`;
