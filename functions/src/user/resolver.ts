@@ -141,7 +141,10 @@ export class UserResolver {
     const user = await this.userService.login(data);
     const token = await user.getIdToken();
     res.setHeader('cache-control', 'private');
-    res.cookie('__session', token, { httpOnly: true });
+    res.cookie('__session', token, {
+      httpOnly: true,
+      sameSite: 'none',
+    });
     return {
       id: user.uid,
       name: user.displayName,
