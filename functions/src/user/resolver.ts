@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { CookieOptions, Response } from 'express';
 import {
   Arg,
   Authorized,
@@ -14,6 +14,7 @@ import {
   Root,
 } from 'type-graphql';
 import { Inject, Service } from 'typedi';
+import { env } from '../env';
 import { MeetingService } from '../meeting/service';
 import { Meeting } from '../meeting/types';
 import { ScheduleService } from '../schedule/service';
@@ -72,6 +73,11 @@ class UserWithToken extends User {
   @Field()
   token: string;
 }
+
+const PROD_COOKIE_OPTS: CookieOptions = {
+  secure: true,
+  sameSite: 'none',
+};
 
 @Service()
 @Resolver(User)
@@ -143,7 +149,7 @@ export class UserResolver {
     res.setHeader('cache-control', 'private');
     res.cookie('__session', token, {
       httpOnly: true,
-      sameSite: 'none',
+      ...(env.env === 'production' ? PROD_COOKIE_OPTS : {}),
     });
     return {
       id: user.uid,
