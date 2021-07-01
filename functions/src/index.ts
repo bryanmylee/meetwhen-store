@@ -1,5 +1,4 @@
 import { ApolloServer } from 'apollo-server-express';
-import cookieParser from 'cookie-parser';
 import express from 'express';
 import * as functions from 'firebase-functions';
 import 'reflect-metadata';
@@ -25,15 +24,7 @@ const configureServer = async () => {
 
   const app = express();
 
-  app.use(cookieParser());
-
-  apolloServer.applyMiddleware({
-    app,
-    cors: {
-      credentials: true,
-      origin: [/^https:\/\/meetwhen-\w+-bryanmylee.vercel.app$/, /^https:\/\/[www.]*meetwhen.io$/],
-    },
-  });
+  apolloServer.applyMiddleware({ app });
 
   return app;
 };

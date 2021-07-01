@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import {
   Arg,
   Authorized,
@@ -114,9 +115,12 @@ export class UserResolver {
   }
 
   @Mutation(() => UserWithToken)
-  async addUser(@Arg('data') data: AddUserInput): Promise<UserWithToken> {
+  async addUser(
+    @Arg('data') data: AddUserInput,
+    @Ctx('res') res: Response
+  ): Promise<UserWithToken> {
     await this.userService.addNew(data);
-    return this.login(data);
+    return this.login(data, res);
   }
 
   @Mutation(() => User)
@@ -129,9 +133,10 @@ export class UserResolver {
   }
 
   @Mutation(() => UserWithToken)
-  async login(@Arg('data') data: LoginInput): Promise<UserWithToken> {
+  async login(@Arg('data') data: LoginInput, @Ctx('res') res: Response): Promise<UserWithToken> {
     const user = await this.userService.login(data);
     const token = await user.getIdToken();
+    res.setHeader('__token', token);
     return {
       id: user.uid,
       name: user.displayName,
@@ -141,9 +146,13 @@ export class UserResolver {
   }
 
   @Mutation(() => UserWithToken)
-  async loginGuest(@Arg('data') data: LoginGuestInput): Promise<UserWithToken> {
+  async loginGuest(
+    @Arg('data') data: LoginGuestInput,
+    @Ctx('res') res: Response
+  ): Promise<UserWithToken> {
     const user = await this.userService.loginGuest(data);
     const token = await user.getIdToken();
+    res.setHeader('__token', token);
     return {
       id: user.uid,
       name: user.displayName,
