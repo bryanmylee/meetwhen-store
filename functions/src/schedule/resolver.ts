@@ -10,7 +10,6 @@ import {
   ID,
   InputType,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   ResolverInterface,
