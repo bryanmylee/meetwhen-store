@@ -1,4 +1,3 @@
-import { CookieOptions, Response } from 'express';
 import {
   Arg,
   Authorized,
@@ -8,20 +7,18 @@ import {
   ID,
   InputType,
   Mutation,
-  ObjectType,
   Query,
   Resolver,
   Root,
 } from 'type-graphql';
 import { Inject, Service } from 'typedi';
-import { env } from '../env';
 import { MeetingService } from '../meeting/service';
 import { Meeting } from '../meeting/types';
 import { ScheduleService } from '../schedule/service';
 import { Schedule } from '../schedule/types';
 import { Principal } from '../security/context';
 import { UserService } from './service';
-import { User } from './types';
+import { User, UserWithToken } from './types';
 
 @InputType()
 class AddUserInput implements Partial<User> {
@@ -67,18 +64,6 @@ class LoginGuestInput {
   @Field()
   password: string;
 }
-
-@ObjectType()
-class UserWithToken extends User {
-  @Field()
-  token: string;
-}
-
-const PROD_COOKIE_OPTS: CookieOptions = {
-  domain: 'meetwhen.io',
-  secure: true,
-  sameSite: 'none',
-};
 
 @Service()
 @Resolver(User)
@@ -128,10 +113,10 @@ export class UserResolver {
     return (await this.scheduleService.findAllWithUserId(user.id)) as Schedule[];
   }
 
-  @Mutation(() => User)
-  async addUser(@Arg('data') data: AddUserInput, @Ctx('res') res: Response): Promise<User> {
+  @Mutation(() => UserWithToken)
+  async addUser(@Arg('data') data: AddUserInput): Promise<UserWithToken> {
     await this.userService.addNew(data);
-    return this.login(data, res);
+    return this.login(data);
   }
 
   @Mutation(() => User)
@@ -143,20 +128,16 @@ export class UserResolver {
     return (await this.userService.edit({ id: principal!.uid, ...data })) as User;
   }
 
-  @Mutation(() => User)
-  async login(@Arg('data') data: LoginInput, @Ctx('res') res: Response): Promise<User> {
+  @Mutation(() => UserWithToken)
+  async login(@Arg('data') data: LoginInput): Promise<UserWithToken> {
     const user = await this.userService.login(data);
     const token = await user.getIdToken();
-    res.setHeader('cache-control', 'private');
-    res.cookie('__session', token, {
-      httpOnly: true,
-      ...(env.env === 'production' ? PROD_COOKIE_OPTS : {}),
-    });
     return {
       id: user.uid,
       name: user.displayName,
       email: user.email,
-    } as User;
+      token,
+    } as UserWithToken;
   }
 
   @Mutation(() => UserWithToken)
@@ -172,9 +153,7 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  async logout(@Ctx('res') res: Response): Promise<boolean> {
-    res.setHeader('cache-control', 'private');
-    res.clearCookie('__session');
+  async logout(): Promise<boolean> {
     return true;
   }
 }
