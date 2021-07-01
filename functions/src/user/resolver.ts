@@ -19,7 +19,7 @@ import { ScheduleService } from '../schedule/service';
 import { Schedule } from '../schedule/types';
 import { Principal } from '../security/context';
 import { UserService } from './service';
-import { User, UserWithToken } from './types';
+import { User } from './types';
 
 @InputType()
 class AddUserInput implements Partial<User> {
@@ -114,11 +114,8 @@ export class UserResolver {
     return (await this.scheduleService.findAllWithUserId(user.id)) as Schedule[];
   }
 
-  @Mutation(() => UserWithToken)
-  async addUser(
-    @Arg('data') data: AddUserInput,
-    @Ctx('res') res: Response
-  ): Promise<UserWithToken> {
+  @Mutation(() => User)
+  async addUser(@Arg('data') data: AddUserInput, @Ctx('res') res: Response): Promise<User> {
     await this.userService.addNew(data);
     return this.login(data, res);
   }
@@ -132,8 +129,8 @@ export class UserResolver {
     return (await this.userService.edit({ id: principal!.uid, ...data })) as User;
   }
 
-  @Mutation(() => UserWithToken)
-  async login(@Arg('data') data: LoginInput, @Ctx('res') res: Response): Promise<UserWithToken> {
+  @Mutation(() => User)
+  async login(@Arg('data') data: LoginInput, @Ctx('res') res: Response): Promise<User> {
     const user = await this.userService.login(data);
     const token = await user.getIdToken();
     res.setHeader('__token', token);
@@ -141,15 +138,11 @@ export class UserResolver {
       id: user.uid,
       name: user.displayName,
       email: user.email,
-      token,
-    } as UserWithToken;
+    } as User;
   }
 
-  @Mutation(() => UserWithToken)
-  async loginGuest(
-    @Arg('data') data: LoginGuestInput,
-    @Ctx('res') res: Response
-  ): Promise<UserWithToken> {
+  @Mutation(() => User)
+  async loginGuest(@Arg('data') data: LoginGuestInput, @Ctx('res') res: Response): Promise<User> {
     const user = await this.userService.loginGuest(data);
     const token = await user.getIdToken();
     res.setHeader('__token', token);
@@ -157,8 +150,7 @@ export class UserResolver {
       id: user.uid,
       name: user.displayName,
       email: user.email,
-      token,
-    } as UserWithToken;
+    } as User;
   }
 
   @Mutation(() => Boolean)

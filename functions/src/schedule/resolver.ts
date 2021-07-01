@@ -60,12 +60,6 @@ class EditGuestScheduleInput extends ScheduleInput {
   token: string;
 }
 
-@ObjectType()
-class ScheduleWithToken extends Schedule {
-  @Field()
-  token: string;
-}
-
 @Service()
 @Resolver(Schedule)
 export class ScheduleResolver implements ResolverInterface<Schedule> {
@@ -111,11 +105,11 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     })) as Schedule;
   }
 
-  @Mutation(() => ScheduleWithToken)
+  @Mutation(() => Schedule)
   async addGuestSchedule(
     @Arg('data') { username, password, meetingId, intervals }: AddGuestScheduleInput,
     @Ctx('res') res: Response
-  ): Promise<ScheduleWithToken> {
+  ): Promise<Schedule> {
     const { user, scheduleEntry } = await this.scheduleService.addGuestSchedule({
       meetingId,
       intervals,
@@ -125,10 +119,7 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     const userRecord = await this.userService.login({ email: user.email, password });
     const token = await userRecord.getIdToken();
     res.setHeader('__token', token);
-    return {
-      ...(scheduleEntry as Schedule),
-      token,
-    };
+    return scheduleEntry as Schedule;
   }
 
   @Mutation(() => Schedule)

@@ -24,9 +24,4 @@ export class User extends UserShallow {
   schedules: Schedule[];
 }
 
-@ObjectType()
-export class UserWithToken extends User {
-  token: string;
-}
-
 export class UserEntry extends Identifiable {}
