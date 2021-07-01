@@ -75,6 +75,7 @@ class UserWithToken extends User {
 }
 
 const PROD_COOKIE_OPTS: CookieOptions = {
+  domain: 'meetwhen.io',
   secure: true,
   sameSite: 'none',
 };
