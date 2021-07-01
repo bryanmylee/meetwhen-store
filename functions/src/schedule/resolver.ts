@@ -16,7 +16,6 @@ import {
   Root,
 } from 'type-graphql';
 import { Inject, Service } from 'typedi';
-import { firebaseAdmin } from '../firebase/setup';
 import { MeetingService } from '../meeting/service';
 import { Meeting } from '../meeting/types';
 import { Principal } from '../security/context';
@@ -51,12 +50,6 @@ class AddGuestScheduleInput extends ScheduleInput {
 
   @Field()
   password: string;
-}
-
-@InputType()
-class EditGuestScheduleInput extends ScheduleInput {
-  @Field()
-  token: string;
 }
 
 @Service()
@@ -136,9 +129,9 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
 
   @Mutation(() => Schedule)
   async editGuestSchedule(
-    @Arg('data') { meetingId, intervals, token }: EditGuestScheduleInput
+    @Arg('data') { meetingId, intervals }: ScheduleInput,
+    @Ctx('principal') principal: Principal
   ): Promise<Schedule> {
-    const principal: Principal = await firebaseAdmin.auth().verifyIdToken(token);
     return (await this.scheduleService.editSchedule({
       meetingId,
       intervals,
