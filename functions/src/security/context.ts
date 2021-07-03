@@ -23,7 +23,6 @@ export const context: ContextFunction<ExpressContext, unknown> = async ({ req, r
       email: decodedToken.email!,
       ...getDecodedDisplayName(decodedToken.name),
     };
-    console.log(principal);
     return { req, res, principal } as Context;
   } catch (error) {
     return { req, res, principal: null } as Context;
