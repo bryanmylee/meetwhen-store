@@ -52,6 +52,12 @@ class AddGuestScheduleInput extends ScheduleInput {
   password: string;
 }
 
+@ArgsType()
+class DeleteScheduleArgs {
+  @Field(() => ID)
+  meetingId: string;
+}
+
 @Service()
 @Resolver(Schedule)
 export class ScheduleResolver implements ResolverInterface<Schedule> {
@@ -97,6 +103,7 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     })) as Schedule;
   }
 
+  // DEPRECIATED
   @Mutation(() => Schedule)
   async addGuestSchedule(
     @Arg('data') { username, password, meetingId, intervals }: AddGuestScheduleInput,
@@ -127,6 +134,7 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     })) as Schedule;
   }
 
+  // DEPRECIATED
   @Mutation(() => Schedule)
   async editGuestSchedule(
     @Arg('data') { meetingId, intervals }: ScheduleInput,
@@ -137,5 +145,14 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
       intervals,
       userId: principal!.uid,
     })) as Schedule;
+  }
+
+  @Mutation(() => Boolean)
+  @Authorized()
+  async deleteSchedule(
+    @Args() { meetingId }: DeleteScheduleArgs,
+    @Ctx('principal') principal: Principal
+  ): Promise<boolean> {
+    return this.scheduleService.deleteSchedule({ meetingId, userId: principal!.uid });
   }
 }

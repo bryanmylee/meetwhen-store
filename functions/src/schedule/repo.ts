@@ -15,13 +15,18 @@ class ScheduleArgs {
   intervals: Interval[];
 }
 
+class DeleteScheduleArgs {
+  meetingId: string;
+  userId: string;
+}
+
 @Service()
 export class ScheduleRepo extends Repo<ScheduleEntry> {
   constructor() {
     super('schedule');
   }
 
-  async findByMeetingUser({ meetingId, userId }: FindByMeetingUserArgs): Promise<ScheduleEntry> {
+  private async findDocByMeetingUser({ meetingId, userId }: FindByMeetingUserArgs) {
     const results = await this.repo
       .where('meetingId', '==', meetingId)
       .where('userId', '==', userId)
@@ -40,7 +45,11 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
         { id: 'not-found' }
       );
     }
-    const doc = results.docs[0];
+    return results.docs[0];
+  }
+
+  async findByMeetingUser({ meetingId, userId }: FindByMeetingUserArgs): Promise<ScheduleEntry> {
+    const doc = await this.findDocByMeetingUser({ meetingId, userId });
     return { ...doc.data(), id: doc.id } as ScheduleEntry;
   }
 
@@ -95,5 +104,11 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
       { merge: true }
     );
     return { meetingId, userId, intervals, id: ref.id } as ScheduleEntry;
+  }
+
+  async deleteSchedule({ meetingId, userId }: DeleteScheduleArgs): Promise<boolean> {
+    const doc = await this.findDocByMeetingUser({ meetingId, userId });
+    await doc.ref.delete();
+    return true;
   }
 }

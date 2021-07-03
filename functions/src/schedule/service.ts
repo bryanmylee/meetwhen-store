@@ -31,6 +31,11 @@ interface AddGuestScheduleReturned {
   scheduleEntry: ScheduleEntry;
 }
 
+class DeleteScheduleArgs {
+  meetingId: string;
+  userId: string;
+}
+
 @Service()
 export class ScheduleService {
   @Inject()
@@ -89,5 +94,10 @@ export class ScheduleService {
     // check if meeting exists
     await this.meetingService.findById(meetingId);
     return this.scheduleRepo.editSchedule({ meetingId, userId, intervals });
+  }
+
+  async deleteSchedule({ meetingId, userId }: DeleteScheduleArgs): Promise<boolean> {
+    // check if meeting exists
+    return this.scheduleRepo.deleteSchedule({ meetingId, userId });
   }
 }
