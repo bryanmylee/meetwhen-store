@@ -121,17 +121,13 @@ export class UserService {
   async login({ email, password }: LoginArgs): Promise<UserShallow & { token: string }> {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
-      const token = await user.getIdToken();
-      // reloadUserInfo is hidden on the interface
-      const customAttributes = JSON.parse(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (user as any).reloadUserInfo?.customAttributes ?? '{}'
-      ) as UserCustomAttributes;
+      const { guestOf } = await this.findById(user.uid);
+      const token = await firebaseAdmin.auth().createCustomToken(user.uid, { guestOf });
       return {
         id: user.uid,
         email: user.email!,
         name: user.displayName!,
-        guestOf: customAttributes.guestOf ?? null,
+        guestOf: guestOf,
         token,
       };
     } catch (error) {
