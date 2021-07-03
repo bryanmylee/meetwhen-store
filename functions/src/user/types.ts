@@ -24,4 +24,8 @@ export class User extends UserShallow {
   schedules: Schedule[];
 }
 
+export interface UserCustomAttributes {
+  guestOf: string | null;
+}
+
 export class UserEntry extends Identifiable {}

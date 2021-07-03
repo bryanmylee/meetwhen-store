@@ -3,7 +3,10 @@ import { ExpressContext } from 'apollo-server-express';
 import { auth } from 'firebase-admin';
 import { firebaseAdmin } from '../firebase/setup';
 
-export type Principal = auth.DecodedIdToken | null;
+export interface DecodedIdToken extends auth.DecodedIdToken {
+  guestOf: string;
+}
+export type Principal = DecodedIdToken | null;
 export type Context = ExpressContext & { principal: Principal };
 
 /**
@@ -16,7 +19,7 @@ export type Context = ExpressContext & { principal: Principal };
 export const context: ContextFunction<ExpressContext, unknown> = async ({ req, res }) => {
   try {
     const idToken = getBearerToken(req.headers.authorization) ?? '';
-    const principal: Principal = await firebaseAdmin.auth().verifyIdToken(idToken);
+    const principal = (await firebaseAdmin.auth().verifyIdToken(idToken)) as DecodedIdToken;
     return { req, res, principal } as Context;
   } catch (error) {
     console.error(error);

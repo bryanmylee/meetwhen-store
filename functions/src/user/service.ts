@@ -1,10 +1,10 @@
 import { Response } from 'express';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { AuthError, signInWithEmailAndPassword, User } from 'firebase/auth';
+import { AuthError, signInWithEmailAndPassword } from 'firebase/auth';
 import { Service } from 'typedi';
 import { auth } from '../firebase/auth';
 import { firebaseAdmin } from '../firebase/setup';
-import { UserShallow } from './types';
+import { UserCustomAttributes, UserShallow } from './types';
 
 class AddNewArgs {
   name: string;
@@ -51,14 +51,6 @@ export class UserService {
     } catch (error) {
       throw handleError(error);
     }
-  }
-
-  getGuestOfByEmail(email: string): string | null {
-    if (email.endsWith('.guest')) {
-      const match = email.match(/@(\w+).guest$/);
-      return match![1];
-    }
-    return null;
   }
 
   async addNew({ name, email, password }: AddNewArgs): Promise<UserShallow> {
@@ -126,23 +118,34 @@ export class UserService {
     }
   }
 
-  async login({ email, password }: LoginArgs): Promise<User> {
+  async login({ email, password }: LoginArgs): Promise<UserShallow & { token: string }> {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
-      return user;
+      const token = await user.getIdToken();
+      // reloadUserInfo is hidden on the interface
+      const customAttributes = JSON.parse(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (user as any).reloadUserInfo.customAttributes
+      ) as UserCustomAttributes;
+      return {
+        id: user.uid,
+        email: user.email!,
+        name: user.displayName!,
+        guestOf: customAttributes.guestOf,
+        token,
+      };
     } catch (error) {
       throw handleError(error);
     }
   }
 
-  async loginGuest({ meetingId, username, password }: LoginGuestArgs): Promise<User> {
+  async loginGuest({
+    meetingId,
+    username,
+    password,
+  }: LoginGuestArgs): Promise<UserShallow & { token: string }> {
     const email = getGuestEmail(meetingId, username);
-    try {
-      const { user } = await signInWithEmailAndPassword(auth, email, password);
-      return user;
-    } catch (error) {
-      throw handleError(error);
-    }
+    return this.login({ email, password });
   }
 
   async logout(response: Response): Promise<boolean> {
