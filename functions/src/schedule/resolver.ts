@@ -151,8 +151,9 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
   @Authorized()
   async deleteSchedule(
     @Args() { meetingId }: DeleteScheduleArgs,
-    @Ctx('principal') principal: Principal
+    @Ctx('principal') principal: Principal,
+    @Ctx('res') response: Response
   ): Promise<boolean> {
-    return this.scheduleService.deleteSchedule({ meetingId, userId: principal!.uid });
+    return this.scheduleService.deleteSchedule({ meetingId, userId: principal!.uid, response });
   }
 }

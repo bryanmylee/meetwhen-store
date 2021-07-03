@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import { Inject, Service } from 'typedi';
 import { MeetingService } from '../meeting/service';
 import { Meeting } from '../meeting/types';
@@ -34,6 +35,7 @@ interface AddGuestScheduleReturned {
 class DeleteScheduleArgs {
   meetingId: string;
   userId: string;
+  response: Response;
 }
 
 @Service()
@@ -96,8 +98,11 @@ export class ScheduleService {
     return this.scheduleRepo.editSchedule({ meetingId, userId, intervals });
   }
 
-  async deleteSchedule({ meetingId, userId }: DeleteScheduleArgs): Promise<boolean> {
-    // check if meeting exists
+  async deleteSchedule({ meetingId, userId, response }: DeleteScheduleArgs): Promise<boolean> {
+    const user = await this.userService.findById(userId);
+    if (user.guestOf !== null) {
+      await this.userService.deleteById(user.id, response);
+    }
     return this.scheduleRepo.deleteSchedule({ meetingId, userId });
   }
 }

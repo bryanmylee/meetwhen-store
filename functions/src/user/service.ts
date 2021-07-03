@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { AuthError, signInWithEmailAndPassword, User } from 'firebase/auth';
 import { Service } from 'typedi';
@@ -108,6 +109,15 @@ export class UserService {
     }
   }
 
+  async deleteById(id: string, response: Response): Promise<void> {
+    try {
+      await firebaseAdmin.auth().deleteUser(id);
+      await this.logout(response);
+    } catch (error) {
+      throw handleError(error);
+    }
+  }
+
   async login({ email, password }: LoginArgs): Promise<User> {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
@@ -125,6 +135,13 @@ export class UserService {
     } catch (error) {
       throw handleError(error);
     }
+  }
+
+  async logout(response: Response): Promise<boolean> {
+    // Signal to the client to delete the access token cookie.
+    // '' empty string clears the header.
+    response.setHeader('__token', '_');
+    return true;
   }
 }
 

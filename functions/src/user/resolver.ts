@@ -176,9 +176,6 @@ export class UserResolver {
 
   @Mutation(() => Boolean)
   async logout(@Ctx('res') res: Response): Promise<boolean> {
-    // Signal to the client to delete the access token cookie.
-    // '' empty string clears the header.
-    res.setHeader('__token', '_');
-    return true;
+    return this.userService.logout(res);
   }
 }
