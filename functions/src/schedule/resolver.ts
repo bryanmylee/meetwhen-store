@@ -43,15 +43,6 @@ class ScheduleInput {
   intervals: IntervalInput[];
 }
 
-@InputType()
-class AddGuestScheduleInput extends ScheduleInput {
-  @Field()
-  username: string;
-
-  @Field()
-  password: string;
-}
-
 @ArgsType()
 class DeleteScheduleArgs {
   @Field(() => ID)
@@ -103,40 +94,9 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     })) as Schedule;
   }
 
-  // DEPRECIATED
-  @Mutation(() => Schedule)
-  async addGuestSchedule(
-    @Arg('data') { username, password, meetingId, intervals }: AddGuestScheduleInput,
-    @Ctx('res') res: Response
-  ): Promise<Schedule> {
-    const { user, scheduleEntry } = await this.scheduleService.addGuestSchedule({
-      meetingId,
-      intervals,
-      username,
-      password,
-    });
-    const userRecord = await this.userService.login({ email: user.email, password });
-    const token = await userRecord.getIdToken();
-    res.setHeader('__token', token);
-    return scheduleEntry as Schedule;
-  }
-
   @Mutation(() => Schedule)
   @Authorized()
   async editSchedule(
-    @Arg('data') { meetingId, intervals }: ScheduleInput,
-    @Ctx('principal') principal: Principal
-  ): Promise<Schedule> {
-    return (await this.scheduleService.editSchedule({
-      meetingId,
-      intervals,
-      userId: principal!.uid,
-    })) as Schedule;
-  }
-
-  // DEPRECIATED
-  @Mutation(() => Schedule)
-  async editGuestSchedule(
     @Arg('data') { meetingId, intervals }: ScheduleInput,
     @Ctx('principal') principal: Principal
   ): Promise<Schedule> {
