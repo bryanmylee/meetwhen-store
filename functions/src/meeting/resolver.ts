@@ -104,7 +104,7 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
     @Ctx('principal') principal: Principal
   ): Promise<Meeting> {
     if (principal !== null) {
-      return (await this.meetingService.addNew({ ...data, ownerId: principal.uid })) as Meeting;
+      return (await this.meetingService.addNew({ ...data, ownerId: principal.id })) as Meeting;
     }
     return (await this.meetingService.addNew(data)) as Meeting;
   }
@@ -123,7 +123,7 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
         { id: 'no-owner' }
       );
     }
-    if (principal!.uid !== meetingEntry.ownerId) {
+    if (principal!.id !== meetingEntry.ownerId) {
       throw new HttpsError('permission-denied', `meeting(id=${id}) edit permission denied`, {
         id: 'permission-denied',
       });

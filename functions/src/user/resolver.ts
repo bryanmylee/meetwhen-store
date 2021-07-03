@@ -98,12 +98,7 @@ export class UserResolver {
   @Query(() => User)
   @Authorized()
   async me(@Ctx('principal') principal: Principal): Promise<User> {
-    return {
-      name: principal!.name,
-      id: principal!.uid,
-      email: principal!.email,
-      guestOf: this.userService.getGuestOfByEmail(principal!.email!),
-    } as User;
+    return principal as User;
   }
 
   @FieldResolver()
@@ -137,33 +132,21 @@ export class UserResolver {
     @Arg('data') data: EditUserInput,
     @Ctx('principal') principal: Principal
   ): Promise<User> {
-    return (await this.userService.edit({ id: principal!.uid, ...data })) as User;
+    return (await this.userService.edit({ id: principal!.id, ...data })) as User;
   }
 
   @Mutation(() => User)
   async login(@Arg('data') data: LoginInput, @Ctx('res') res: Response): Promise<User> {
-    const user = await this.userService.login(data);
-    const token = await user.getIdToken();
+    const { token, ...user } = await this.userService.login(data);
     res.setHeader('__token', token);
-    return {
-      id: user.uid,
-      name: user.displayName,
-      email: user.email,
-      guestOf: this.userService.getGuestOfByEmail(user.email!),
-    } as User;
+    return user as User;
   }
 
   @Mutation(() => User)
   async loginGuest(@Arg('data') data: LoginGuestInput, @Ctx('res') res: Response): Promise<User> {
-    const user = await this.userService.loginGuest(data);
-    const token = await user.getIdToken();
+    const { token, ...user } = await this.userService.loginGuest(data);
     res.setHeader('__token', token);
-    return {
-      id: user.uid,
-      name: user.displayName,
-      email: user.email,
-      guestOf: this.userService.getGuestOfByEmail(user.email!),
-    } as User;
+    return user as User;
   }
 
   @Mutation(() => Boolean)

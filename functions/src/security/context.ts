@@ -1,9 +1,10 @@
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express';
-import { auth } from 'firebase-admin';
+import { UserShallow } from '../user/types';
 import { firebaseAdmin } from '../firebase/setup';
+import { getDecodedDisplayName } from '../user/service';
 
-export type Principal = auth.DecodedIdToken | null;
+export type Principal = UserShallow | null;
 export type Context = ExpressContext & { principal: Principal };
 
 /**
@@ -16,10 +17,15 @@ export type Context = ExpressContext & { principal: Principal };
 export const context: ContextFunction<ExpressContext, unknown> = async ({ req, res }) => {
   try {
     const idToken = getBearerToken(req.headers.authorization) ?? '';
-    const principal: Principal = await firebaseAdmin.auth().verifyIdToken(idToken);
+    const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken);
+    const principal: Principal = {
+      id: decodedToken.uid,
+      email: decodedToken.email!,
+      ...getDecodedDisplayName(decodedToken.name),
+    };
+    console.log(principal);
     return { req, res, principal } as Context;
   } catch (error) {
-    console.error(error);
     return { req, res, principal: null } as Context;
   }
 };

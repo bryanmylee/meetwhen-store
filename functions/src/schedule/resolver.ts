@@ -90,7 +90,7 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     return (await this.scheduleService.addSchedule({
       meetingId,
       intervals,
-      userId: principal!.uid,
+      userId: principal!.id,
     })) as Schedule;
   }
 
@@ -103,7 +103,7 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     return (await this.scheduleService.editSchedule({
       meetingId,
       intervals,
-      userId: principal!.uid,
+      userId: principal!.id,
     })) as Schedule;
   }
 
@@ -114,6 +114,6 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
     @Ctx('principal') principal: Principal,
     @Ctx('res') response: Response
   ): Promise<boolean> {
-    return this.scheduleService.deleteSchedule({ meetingId, userId: principal!.uid, response });
+    return this.scheduleService.deleteSchedule({ meetingId, userId: principal!.id, response });
   }
 }

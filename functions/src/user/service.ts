@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { AuthError, signInWithEmailAndPassword, User } from 'firebase/auth';
+import { AuthError, signInWithEmailAndPassword } from 'firebase/auth';
 import { Service } from 'typedi';
 import { auth } from '../firebase/auth';
 import { firebaseAdmin } from '../firebase/setup';
@@ -53,26 +53,17 @@ export class UserService {
     }
   }
 
-  getGuestOfByEmail(email: string): string | null {
-    if (email.endsWith('.guest')) {
-      const match = email.match(/@(\w+).guest$/);
-      return match![1];
-    }
-    return null;
-  }
-
   async addNew({ name, email, password }: AddNewArgs): Promise<UserShallow> {
     try {
       const record = await firebaseAdmin.auth().createUser({
-        displayName: name,
+        displayName: getEncodedDisplayName(name),
         email,
         password: password,
       });
-      firebaseAdmin.auth().setCustomUserClaims(record.uid, { guestOf: null });
       return {
         id: record.uid,
-        email: record.email!,
-        name: record.displayName!,
+        email,
+        name,
         guestOf: null,
       };
     } catch (error) {
@@ -83,15 +74,14 @@ export class UserService {
   async addNewGuest({ username, password, meetingId }: AddNewGuestArgs): Promise<UserShallow> {
     try {
       const record = await firebaseAdmin.auth().createUser({
-        displayName: username,
+        displayName: getEncodedDisplayName(username, meetingId),
         email: getGuestEmail(meetingId, username),
         password: password,
       });
-      firebaseAdmin.auth().setCustomUserClaims(record.uid, { guestOf: meetingId });
       return {
         id: record.uid,
         email: record.email!,
-        name: record.displayName!,
+        name: username,
         guestOf: meetingId,
       };
     } catch (error) {
@@ -126,23 +116,28 @@ export class UserService {
     }
   }
 
-  async login({ email, password }: LoginArgs): Promise<User> {
+  async login({ email, password }: LoginArgs): Promise<UserShallow & { token: string }> {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
-      return user;
+      const token = await user.getIdToken();
+      return {
+        id: user.uid,
+        email: user.email!,
+        token,
+        ...getDecodedDisplayName(user.displayName!),
+      };
     } catch (error) {
       throw handleError(error);
     }
   }
 
-  async loginGuest({ meetingId, username, password }: LoginGuestArgs): Promise<User> {
+  async loginGuest({
+    meetingId,
+    username,
+    password,
+  }: LoginGuestArgs): Promise<UserShallow & { token: string }> {
     const email = getGuestEmail(meetingId, username);
-    try {
-      const { user } = await signInWithEmailAndPassword(auth, email, password);
-      return user;
-    } catch (error) {
-      throw handleError(error);
-    }
+    return this.login({ email, password });
   }
 
   async logout(response: Response): Promise<boolean> {
@@ -172,4 +167,18 @@ const handleError = ({ message, code }: AuthError) => {
   throw new HttpsError('internal', message, { id: code });
 };
 
-const getGuestEmail = (meetingId: string, username: string) => `${username}@${meetingId}.guest`;
+export const getEncodedDisplayName = (name: string, meetingId = ''): string =>
+  name + ';' + meetingId;
+
+export const getDecodedDisplayName = (
+  displayName: string
+): { name: string; guestOf: string | null } => {
+  const [name, guestOf] = displayName.split(';');
+  if (guestOf === '') {
+    return { name, guestOf: null };
+  }
+  return { name, guestOf };
+};
+
+export const getGuestEmail = (meetingId: string, username: string): string =>
+  `${username}@${meetingId}.guest`;
