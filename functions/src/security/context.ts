@@ -1,8 +1,8 @@
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express';
-import { UserShallow } from '../user/types';
 import { firebaseAdmin } from '../firebase/setup';
 import { getDecodedDisplayName } from '../user/service';
+import { UserShallow } from '../user/types';
 
 export type Principal = UserShallow | null;
 export type Context = ExpressContext & { principal: Principal };
