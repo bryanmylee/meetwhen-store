@@ -41,12 +41,10 @@ export class UserService {
   async findById(id: string): Promise<UserShallow> {
     try {
       const record = await firebaseAdmin.auth().getUser(id);
-      const guestOf = record.customClaims?.guestOf;
       return {
         id: record.uid,
         email: record.email!,
-        name: record.displayName!,
-        guestOf,
+        ...getDecodedDisplayName(record.displayName!),
       };
     } catch (error) {
       throw handleError(error);
@@ -91,16 +89,22 @@ export class UserService {
 
   async edit({ id, ...args }: EditArgs): Promise<UserShallow> {
     try {
+      // manually handle display name edit due to custom encoding.
+      const user = await this.findById(id);
+      const { guestOf } = getDecodedDisplayName(user.name);
+      const displayName =
+        args.name !== undefined
+          ? getEncodedDisplayName(args.name, guestOf ?? undefined)
+          : user.name;
       const record = await firebaseAdmin.auth().updateUser(id, {
         email: args.email,
-        displayName: args.name,
+        displayName,
         password: args.password,
       });
       return {
         id: record.uid,
         email: record.email!,
-        name: record.displayName!,
-        guestOf: null,
+        ...getDecodedDisplayName(record.displayName!),
       };
     } catch (error) {
       throw handleError(error);
