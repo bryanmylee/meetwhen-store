@@ -25,7 +25,7 @@ export class User extends UserShallow {
 }
 
 export interface UserCustomAttributes {
-  guestOf: string | null;
+  guestOf?: string | null;
 }
 
 export class UserEntry extends Identifiable {}

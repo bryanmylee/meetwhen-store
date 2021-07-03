@@ -125,13 +125,13 @@ export class UserService {
       // reloadUserInfo is hidden on the interface
       const customAttributes = JSON.parse(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (user as any).reloadUserInfo.customAttributes
+        (user as any).reloadUserInfo?.customAttributes ?? '{}'
       ) as UserCustomAttributes;
       return {
         id: user.uid,
         email: user.email!,
         name: user.displayName!,
-        guestOf: customAttributes.guestOf,
+        guestOf: customAttributes.guestOf ?? null,
         token,
       };
     } catch (error) {
