@@ -34,6 +34,18 @@ class AddUserInput implements Partial<User> {
 }
 
 @InputType()
+class AddGuestUserInput {
+  @Field()
+  username: string;
+
+  @Field()
+  password: string;
+
+  @Field()
+  meetingId: string;
+}
+
+@InputType()
 class EditUserInput implements Partial<User> {
   @Field({ nullable: true })
   name?: string;
@@ -118,6 +130,15 @@ export class UserResolver {
   async addUser(@Arg('data') data: AddUserInput, @Ctx('res') res: Response): Promise<User> {
     await this.userService.addNew(data);
     return this.login(data, res);
+  }
+
+  @Mutation(() => User)
+  async addGuestUser(
+    @Arg('data') data: AddGuestUserInput,
+    @Ctx('res') res: Response
+  ): Promise<User> {
+    const user = await this.userService.addNewGuest(data);
+    return this.login({ email: user.email, password: data.password }, res);
   }
 
   @Mutation(() => User)
