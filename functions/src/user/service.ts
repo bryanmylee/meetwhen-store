@@ -52,6 +52,9 @@ export class UserService {
   }
 
   async addNew({ name, email, password }: AddNewArgs): Promise<UserShallow> {
+    if (name.includes(';')) {
+      throw new HttpsError('invalid-argument', 'only alphanumeric characters allowed for name');
+    }
     try {
       const record = await firebaseAdmin.auth().createUser({
         displayName: getEncodedDisplayName(name),
@@ -70,6 +73,9 @@ export class UserService {
   }
 
   async addNewGuest({ username, password, meetingId }: AddNewGuestArgs): Promise<UserShallow> {
+    if (username.includes(';')) {
+      throw new HttpsError('invalid-argument', 'only alphanumeric characters allowed for name');
+    }
     try {
       const record = await firebaseAdmin.auth().createUser({
         displayName: getEncodedDisplayName(username, meetingId),
