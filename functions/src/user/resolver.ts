@@ -102,7 +102,7 @@ export class UserResolver {
       name: principal!.name,
       id: principal!.uid,
       email: principal!.email,
-      guestOf: principal!.guestOf,
+      guestOf: this.userService.getGuestOfByEmail(principal!.email!),
     } as User;
   }
 
@@ -142,16 +142,28 @@ export class UserResolver {
 
   @Mutation(() => User)
   async login(@Arg('data') data: LoginInput, @Ctx('res') res: Response): Promise<User> {
-    const { token, ...user } = await this.userService.login(data);
+    const user = await this.userService.login(data);
+    const token = await user.getIdToken();
     res.setHeader('__token', token);
-    return user as User;
+    return {
+      id: user.uid,
+      name: user.displayName,
+      email: user.email,
+      guestOf: this.userService.getGuestOfByEmail(user.email!),
+    } as User;
   }
 
   @Mutation(() => User)
   async loginGuest(@Arg('data') data: LoginGuestInput, @Ctx('res') res: Response): Promise<User> {
-    const { token, ...user } = await this.userService.loginGuest(data);
+    const user = await this.userService.loginGuest(data);
+    const token = await user.getIdToken();
     res.setHeader('__token', token);
-    return user as User;
+    return {
+      id: user.uid,
+      name: user.displayName,
+      email: user.email,
+      guestOf: this.userService.getGuestOfByEmail(user.email!),
+    } as User;
   }
 
   @Mutation(() => Boolean)

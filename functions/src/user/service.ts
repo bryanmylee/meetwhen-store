@@ -1,10 +1,10 @@
 import { Response } from 'express';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { AuthError, signInWithEmailAndPassword } from 'firebase/auth';
+import { AuthError, signInWithEmailAndPassword, User } from 'firebase/auth';
 import { Service } from 'typedi';
 import { auth } from '../firebase/auth';
 import { firebaseAdmin } from '../firebase/setup';
-import { UserCustomAttributes, UserShallow } from './types';
+import { UserShallow } from './types';
 
 class AddNewArgs {
   name: string;
@@ -51,6 +51,14 @@ export class UserService {
     } catch (error) {
       throw handleError(error);
     }
+  }
+
+  getGuestOfByEmail(email: string): string | null {
+    if (email.endsWith('.guest')) {
+      const match = email.match(/@(\w+).guest$/);
+      return match![1];
+    }
+    return null;
   }
 
   async addNew({ name, email, password }: AddNewArgs): Promise<UserShallow> {
@@ -118,30 +126,23 @@ export class UserService {
     }
   }
 
-  async login({ email, password }: LoginArgs): Promise<UserShallow & { token: string }> {
+  async login({ email, password }: LoginArgs): Promise<User> {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
-      const { guestOf } = await this.findById(user.uid);
-      const token = await firebaseAdmin.auth().createCustomToken(user.uid, { guestOf });
-      return {
-        id: user.uid,
-        email: user.email!,
-        name: user.displayName!,
-        guestOf: guestOf,
-        token,
-      };
+      return user;
     } catch (error) {
       throw handleError(error);
     }
   }
 
-  async loginGuest({
-    meetingId,
-    username,
-    password,
-  }: LoginGuestArgs): Promise<UserShallow & { token: string }> {
+  async loginGuest({ meetingId, username, password }: LoginGuestArgs): Promise<User> {
     const email = getGuestEmail(meetingId, username);
-    return this.login({ email, password });
+    try {
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      return user;
+    } catch (error) {
+      throw handleError(error);
+    }
   }
 
   async logout(response: Response): Promise<boolean> {
