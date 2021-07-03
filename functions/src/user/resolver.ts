@@ -98,21 +98,11 @@ export class UserResolver {
   @Query(() => User)
   @Authorized()
   async me(@Ctx('principal') principal: Principal): Promise<User> {
-    const email = principal!.email!;
-    if (email.endsWith('.guest')) {
-      const match = email.match(/@(\w+).guest$/);
-      return {
-        name: principal!.name,
-        id: principal!.uid,
-        email: principal!.email,
-        guestOf: match![1],
-      } as User;
-    }
     return {
       name: principal!.name,
       id: principal!.uid,
       email: principal!.email,
-      guestOf: null,
+      guestOf: this.userService.getGuestOfByEmail(principal!.email!),
     } as User;
   }
 
@@ -159,6 +149,7 @@ export class UserResolver {
       id: user.uid,
       name: user.displayName,
       email: user.email,
+      guestOf: this.userService.getGuestOfByEmail(user.email!),
     } as User;
   }
 
@@ -171,6 +162,7 @@ export class UserResolver {
       id: user.uid,
       name: user.displayName,
       email: user.email,
+      guestOf: this.userService.getGuestOfByEmail(user.email!),
     } as User;
   }
 

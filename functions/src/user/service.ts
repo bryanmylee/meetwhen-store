@@ -53,6 +53,14 @@ export class UserService {
     }
   }
 
+  getGuestOfByEmail(email: string): string | null {
+    if (email.endsWith('.guest')) {
+      const match = email.match(/@(\w+).guest$/);
+      return match![1];
+    }
+    return null;
+  }
+
   async addNew({ name, email, password }: AddNewArgs): Promise<UserShallow> {
     try {
       const record = await firebaseAdmin.auth().createUser({
