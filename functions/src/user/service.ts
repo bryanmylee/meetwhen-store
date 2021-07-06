@@ -191,4 +191,4 @@ export const getDecodedDisplayName = (
 };
 
 export const getGuestEmail = (meetingId: string, username: string): string =>
-  `${username}@${meetingId}.guest`;
+  `${username.replace(/\s+/g, '_')}@${meetingId}.guest`;
