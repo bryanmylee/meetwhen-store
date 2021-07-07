@@ -23,15 +23,10 @@ The database can be roughly modelled as:
 
 <!-- prettier-ignore -->
 ```typescript
-interface Database {
-  user: {
-    [id: string]: {
-      name: string
-      email: string
-    }
-  }
+interface Firestore {
   meeting: {
     [id: string]: {
+      slug: string
       name: string
       ownerId?: string  // references user.id
       intervals: {      // represents selectable intervals
@@ -51,13 +46,25 @@ interface Database {
     }
   }
 }
+
+interface Authentication {
+  [id: string]: {
+    id: string
+    displayName: EncodedDisplayName
+    email: string
+  }
+}
+
+type EncodedDisplayName = string // ;-delimited [name, guestOf]
 ```
 
 ### `User`
 
 The `User` entity simply represents the attributes of a user.
 
-`User` is indexed by the document `id` and the `username`.
+`User` is handled by Firebase Authentication, and can be indexed by `id`.
+
+Special care needs to be taken to encode and decode the displayName field of the authentication entity as it stores both the name and the guestOf properties of `User`.
 
 ### `Meeting`
 
@@ -65,7 +72,7 @@ The `Meeting` entity represents the details of a meeting.
 
 A nullable foreign key to the `User` entity exists for identifying the optional owner of a meeting.
 
-`Meeting` is indexed by the document `id` and the `url`.
+`Meeting` is indexed by the document `id` the `slug`.
 
 ### `Schedule`
 
