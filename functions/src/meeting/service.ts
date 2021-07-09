@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 import { Inject, Service } from 'typedi';
 import { IntervalInput } from '../types/interval';
 import { MeetingRepo } from './repo';
-import { MeetingEntry } from './types';
+import { MeetingEntry, MeetingCollectionQueryArgs } from './types';
 
 const MAX_ATTEMPTS = 5;
 
@@ -32,8 +32,11 @@ export class MeetingService {
     return this.repo.findBySlug(slug);
   }
 
-  async findAllByOwnerId(ownerId: string): Promise<MeetingEntry[]> {
-    return this.repo.findAllByOwnerId(ownerId);
+  async findAllByOwnerId(
+    ownerId: string,
+    args?: MeetingCollectionQueryArgs
+  ): Promise<MeetingEntry[]> {
+    return this.repo.findAllByOwnerId(ownerId, args);
   }
 
   private async generateSlug() {

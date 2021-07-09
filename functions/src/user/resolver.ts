@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import {
   Arg,
+  Args,
   Authorized,
   Ctx,
   Field,
@@ -14,7 +15,7 @@ import {
 } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 import { MeetingService } from '../meeting/service';
-import { Meeting } from '../meeting/types';
+import { Meeting, MeetingEntry, MeetingCollectionQueryArgs } from '../meeting/types';
 import { ScheduleService } from '../schedule/service';
 import { Schedule } from '../schedule/types';
 import { Principal } from '../security/context';
@@ -101,9 +102,12 @@ export class UserResolver {
     return principal as User;
   }
 
-  @FieldResolver()
-  async meetings(@Root() user: User): Promise<Meeting[]> {
-    return (await this.meetingService.findAllByOwnerId(user.id)) as Meeting[];
+  @FieldResolver(() => Meeting)
+  async meetings(
+    @Root() user: User,
+    @Args() args: MeetingCollectionQueryArgs
+  ): Promise<MeetingEntry[]> {
+    return await this.meetingService.findAllByOwnerId(user.id, args);
   }
 
   @FieldResolver()

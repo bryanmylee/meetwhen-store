@@ -24,7 +24,7 @@ import { Interval, IntervalInput } from '../types/interval';
 import { UserService } from '../user/service';
 import { User } from '../user/types';
 import { MeetingService } from './service';
-import { Meeting } from './types';
+import { Meeting, MeetingEntry } from './types';
 
 @ArgsType()
 class QueryMeetingArgs implements Partial<Meeting> {
@@ -68,12 +68,12 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   private scheduleService: ScheduleService;
 
   @Query(() => Meeting)
-  async meeting(@Args() { id, slug }: QueryMeetingArgs): Promise<Meeting> {
+  async meeting(@Args() { id, slug }: QueryMeetingArgs): Promise<MeetingEntry> {
     if (id !== undefined) {
-      return (await this.meetingService.findById(id)) as Meeting;
+      return await this.meetingService.findById(id);
     }
     if (slug !== undefined) {
-      return (await this.meetingService.findBySlug(slug)) as Meeting;
+      return await this.meetingService.findBySlug(slug);
     }
     throw new HttpsError('invalid-argument', 'id or slug must be provided', {
       id: 'invalid-argument',
@@ -102,11 +102,11 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   async addMeeting(
     @Arg('data') data: AddMeetingInput,
     @Ctx('principal') principal: Principal
-  ): Promise<Meeting> {
+  ): Promise<MeetingEntry> {
     if (principal !== null) {
-      return (await this.meetingService.addNew({ ...data, ownerId: principal.id })) as Meeting;
+      return await this.meetingService.addNew({ ...data, ownerId: principal.id });
     }
-    return (await this.meetingService.addNew(data)) as Meeting;
+    return await this.meetingService.addNew(data);
   }
 
   @Mutation(() => Meeting)
@@ -114,7 +114,7 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   async editMeeting(
     @Arg('data') { id, ...editArgs }: EditMeetingInput,
     @Ctx('principal') principal: Principal
-  ): Promise<Meeting> {
+  ): Promise<MeetingEntry> {
     const meetingEntry = await this.meetingService.findById(id);
     if (meetingEntry.ownerId === undefined) {
       throw new HttpsError(
@@ -128,6 +128,6 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
         id: 'permission-denied',
       });
     }
-    return (await this.meetingService.edit(id, editArgs)) as Meeting;
+    return await this.meetingService.edit(id, editArgs);
   }
 }

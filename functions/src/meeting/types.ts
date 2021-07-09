@@ -8,7 +8,7 @@ import { TimeOrder } from '../types/time-order';
 
 @ArgsType()
 export class MeetingCollectionQueryArgs extends CollectionQueryArgs {
-  @Field(() => TimeOrder)
+  @Field(() => TimeOrder, { nullable: true })
   order?: TimeOrder;
 }
 
