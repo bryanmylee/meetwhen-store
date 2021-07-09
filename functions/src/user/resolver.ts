@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { getMergedMeetings } from '../meeting/utils/merge-meetings';
 import {
   Arg,
   Args,
@@ -108,6 +109,25 @@ export class UserResolver {
     @Args() args?: MeetingCollectionQueryArgs
   ): Promise<MeetingEntry[]> {
     return this.meetingService.findAllByOwnerId(user.id, args);
+  }
+
+  /**
+   * Get all relevant meetings for a given user. This includes owned and joined meetings.
+   * @param userId The meetings of the user.
+   * @param args Parameters for the query.
+   */
+  @FieldResolver(() => [Meeting])
+  async allMeetings(
+    @Root() user: User,
+    @Args() args?: MeetingCollectionQueryArgs
+  ): Promise<MeetingEntry[]> {
+    const owned = await this.meetingService.findAllByOwnerId(user.id, args);
+    const joinedSchedules = await this.scheduleService.findAllByUserId(user.id, args);
+    // TODO: provide single query to populate all ids.
+    const joined = await Promise.all(
+      joinedSchedules.map((schedule) => this.meetingService.findById(schedule.meetingId))
+    );
+    return getMergedMeetings(owned, joined, args);
   }
 
   @FieldResolver(() => [Schedule])

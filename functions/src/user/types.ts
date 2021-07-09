@@ -20,6 +20,9 @@ export class User extends UserShallow {
   @Field(() => [Meeting])
   meetings: Meeting[];
 
+  @Field(() => [Meeting])
+  allMeetings: Meeting[];
+
   @Field(() => [Schedule])
   schedules: Schedule[];
 }
