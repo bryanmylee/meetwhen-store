@@ -39,11 +39,11 @@ export class ScheduleService {
   }
 
   async findAllWithMeetingId(meetingId: string): Promise<ScheduleEntry[]> {
-    return this.scheduleRepo.findAllWithMeetingId(meetingId);
+    return this.scheduleRepo.findAllByMeetingId(meetingId);
   }
 
   async findAllWithUserId(userId: string): Promise<ScheduleEntry[]> {
-    return this.scheduleRepo.findAllWithUserId(userId);
+    return this.scheduleRepo.findAllByUserId(userId);
   }
 
   async addSchedule({ meetingId, userId, intervals }: ScheduleArgs): Promise<ScheduleEntry> {

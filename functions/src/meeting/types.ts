@@ -27,11 +27,11 @@ export class Meeting extends Identifiable {
   owner?: User;
   ownerId?: string;
 
-  @Field(() => Interval)
-  total: Interval;
-
   @Field(() => [Interval])
   intervals: Interval[];
+
+  @Field(() => Interval)
+  total: Interval;
 
   @Field(() => [Schedule])
   schedules: Schedule[];

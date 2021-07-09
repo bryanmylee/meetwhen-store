@@ -53,12 +53,12 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
     return { ...doc.data(), id: doc.id } as ScheduleEntry;
   }
 
-  async findAllWithMeetingId(meetingId: string): Promise<ScheduleEntry[]> {
+  async findAllByMeetingId(meetingId: string): Promise<ScheduleEntry[]> {
     const results = await this.repo.where('meetingId', '==', meetingId).get();
     return results.docs.map((doc) => ({ ...doc.data(), id: doc.id } as ScheduleEntry));
   }
 
-  async findAllWithUserId(userId: string): Promise<ScheduleEntry[]> {
+  async findAllByUserId(userId: string): Promise<ScheduleEntry[]> {
     const results = await this.repo.where('userId', '==', userId).get();
     return results.docs.map((doc) => ({ ...doc.data(), id: doc.id } as ScheduleEntry));
   }
