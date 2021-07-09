@@ -1,8 +1,8 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { TimeOrder } from '../types/time-order';
 import { Service } from 'typedi';
 import { Repo } from '../firebase/repo';
 import { getTotalInterval, Interval } from '../types/interval';
+import { TimeOrder } from '../types/time-order';
 import { ScheduleCollectionQueryArgs, ScheduleEntry } from './types';
 
 class FindByMeetingUserArgs {
