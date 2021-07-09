@@ -123,9 +123,8 @@ export class UserResolver {
   ): Promise<MeetingEntry[]> {
     const owned = await this.meetingService.findAllByOwnerId(user.id, args);
     const joinedSchedules = await this.scheduleService.findAllByUserId(user.id, args);
-    // TODO: provide single query to populate all ids.
-    const joined = await Promise.all(
-      joinedSchedules.map((schedule) => this.meetingService.findById(schedule.meetingId))
+    const joined = await this.meetingService.populate(
+      joinedSchedules.map(({ meetingId }) => meetingId)
     );
     return getMergedMeetings(owned, joined, args);
   }

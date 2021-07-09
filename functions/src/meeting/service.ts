@@ -28,6 +28,10 @@ export class MeetingService {
     return this.repo.findById(id);
   }
 
+  async populate(ids: string[]): Promise<MeetingEntry[]> {
+    return this.repo.populate(ids);
+  }
+
   async findBySlug(slug: string): Promise<MeetingEntry> {
     return this.repo.findBySlug(slug);
   }
