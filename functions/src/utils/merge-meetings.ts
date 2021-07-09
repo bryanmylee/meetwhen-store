@@ -1,5 +1,5 @@
-import { TimeOrder } from '../../types/time-order';
-import { Meeting, MeetingCollectionQueryArgs } from '../types';
+import { TimeOrder } from '../types/time-order';
+import { Meeting, MeetingCollectionQueryArgs } from '../meeting/types';
 
 type MergableMeeting = Pick<Meeting, 'id' | 'total'>;
 

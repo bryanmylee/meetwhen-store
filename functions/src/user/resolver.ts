@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { getMergedMeetings } from '../meeting/utils/merge-meetings';
+import { getMergedMeetings } from '../utils/merge-meetings';
 import {
   Arg,
   Args,
