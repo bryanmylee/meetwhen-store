@@ -1,7 +1,7 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Service } from 'typedi';
 import { Repo } from '../firebase/repo';
-import { Interval } from '../types/interval';
+import { getTotalInterval, Interval } from '../types/interval';
 import { ScheduleEntry } from './types';
 
 class FindByMeetingUserArgs {
@@ -77,6 +77,7 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
       meetingId,
       userId,
       intervals: intervals.map(({ beg, end }) => ({ beg, end })),
+      total: getTotalInterval(intervals),
     });
     return { meetingId, userId, intervals, id: newRef.id } as ScheduleEntry;
   }
@@ -100,6 +101,7 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
     await ref.set(
       {
         intervals: intervals.map(({ beg, end }) => ({ beg, end })),
+        total: getTotalInterval(intervals),
       },
       { merge: true }
     );

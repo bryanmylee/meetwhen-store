@@ -1,7 +1,7 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Service } from 'typedi';
 import { Repo } from '../firebase/repo';
-import { Interval, IntervalInput } from '../types/interval';
+import { getTotalInterval, IntervalInput } from '../types/interval';
 import { TimeOrder } from '../types/time-order';
 import { MeetingCollectionQueryArgs, MeetingEntry } from './types';
 
@@ -64,21 +64,10 @@ export class MeetingRepo extends Repo<MeetingEntry> {
     const entry: Omit<MeetingEntry, 'id'> = {
       ...newMeeting,
       intervals: newMeeting.intervals.map(({ beg, end }) => ({ beg, end })),
-      total: this.getTotalInterval(newMeeting.intervals),
+      total: getTotalInterval(newMeeting.intervals),
     };
     await newRef.set(entry);
     return { ...newMeeting, id: newRef.id } as MeetingEntry;
-  }
-
-  /**
-   * Get the interval that covers the entire set of intervals.
-   * @param intervals A sorted list of intervals.
-   */
-  private getTotalInterval(intervals: Interval[]): Interval {
-    return {
-      beg: intervals[0].beg,
-      end: intervals[intervals.length - 1].end,
-    };
   }
 
   async edit(id: string, editArgs: EditArgs): Promise<MeetingEntry> {
