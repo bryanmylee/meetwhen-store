@@ -1,8 +1,9 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
+import { TimeOrder } from '../types/time-order';
 import { Service } from 'typedi';
 import { Repo } from '../firebase/repo';
-import { IntervalInput } from '../types/interval';
-import { MeetingEntry } from './types';
+import { Interval, IntervalInput } from '../types/interval';
+import { MeetingEntry, MeetingCollectionQueryArgs } from './types';
 
 class AddNewArgs {
   name: string;
@@ -39,18 +40,45 @@ export class MeetingRepo extends Repo<MeetingEntry> {
     return { ...doc.data(), id: doc.id } as MeetingEntry;
   }
 
-  async findAllByOwnerId(ownerId: string): Promise<MeetingEntry[]> {
-    const results = await this.repo.where('ownerId', '==', ownerId).get();
+  async findAllByOwnerId(
+    ownerId: string,
+    { order, limit }: MeetingCollectionQueryArgs = {}
+  ): Promise<MeetingEntry[]> {
+    let query = this.repo.where('ownerId', '==', ownerId);
+    if (order !== undefined) {
+      if (order === TimeOrder.EARLIEST) {
+        query = query.orderBy('total.beg', 'asc');
+      } else {
+        query = query.orderBy('total.end', 'desc');
+      }
+    }
+    if (limit !== undefined) {
+      query = query.limit(limit);
+    }
+    const results = await query.get();
     return results.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as MeetingEntry[];
   }
 
   async addNew(newMeeting: AddNewArgs): Promise<MeetingEntry> {
     const newRef = this.repo.doc();
-    await newRef.set({
+    const entry: Omit<MeetingEntry, 'id'> = {
       ...newMeeting,
       intervals: newMeeting.intervals.map(({ beg, end }) => ({ beg, end })),
-    });
+      total: this.getTotalInterval(newMeeting.intervals),
+    };
+    await newRef.set(entry);
     return { ...newMeeting, id: newRef.id } as MeetingEntry;
+  }
+
+  /**
+   * Get the interval that covers the entire set of intervals.
+   * @param intervals A sorted list of intervals.
+   */
+  private getTotalInterval(intervals: Interval[]): Interval {
+    return {
+      beg: intervals[0].beg,
+      end: intervals[intervals.length - 1].end,
+    };
   }
 
   async edit(id: string, editArgs: EditArgs): Promise<MeetingEntry> {
