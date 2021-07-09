@@ -5,7 +5,7 @@ import { firebaseAdmin } from './setup';
 export class Repo<T extends Identifiable> {
   protected repo: FirebaseFirestore.CollectionReference;
 
-  constructor(collectionId: string) {
+  constructor(private collectionId: string) {
     this.repo = firebaseAdmin.firestore().collection(collectionId);
   }
 
@@ -14,7 +14,7 @@ export class Repo<T extends Identifiable> {
     const doc = await ref.get();
     const data = doc.data() as Omit<T, 'id'>;
     if (data === undefined) {
-      throw new HttpsError('not-found', `meeting(id=${id}) not found`, {
+      throw new HttpsError('not-found', `${this.collectionId}(id=${id}) not found`, {
         id: 'not-found',
       });
     }
