@@ -23,6 +23,9 @@ export class Repo<T extends Identifiable> {
   }
 
   async populate(ids: string[]): Promise<T[]> {
+    if (ids.length === 0) {
+      return [];
+    }
     const query = this.repo.where(firebaseAdmin.firestore.FieldPath.documentId(), 'in', ids);
     const results = await query.get();
     const dataEntries = results.docs.map((doc) => doc.data() as Omit<T, 'id'>);
