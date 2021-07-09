@@ -1,9 +1,9 @@
 import { ArgsType, Field, Int, ObjectType } from 'type-graphql';
 import { Schedule, ScheduleEntry } from '../schedule/types';
+import { BegOrEnd } from '../types/beg-or-end';
 import { CollectionQueryArgs } from '../types/collection-query-args';
 import { Identifiable } from '../types/identifiable';
 import { Interval } from '../types/interval';
-import { BegOrEnd } from '../types/beg-or-end';
 import { TimeOrder } from '../types/time-order';
 import { User, UserShallow } from '../user/types';
 

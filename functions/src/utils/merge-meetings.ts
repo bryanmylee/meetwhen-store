@@ -1,6 +1,6 @@
-import { recordById } from './record-by-id';
-import { TimeOrder } from '../types/time-order';
 import { Meeting, MeetingCollectionQueryArgs } from '../meeting/types';
+import { TimeOrder } from '../types/time-order';
+import { recordById } from './record-by-id';
 
 type MergableMeeting = Pick<Meeting, 'id' | 'total'>;
 

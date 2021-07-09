@@ -1,8 +1,8 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Service } from 'typedi';
 import { Repo } from '../firebase/repo';
-import { getTotalInterval, IntervalInput } from '../types/interval';
 import { getKeyPaths } from '../types/beg-or-end';
+import { getTotalInterval, IntervalInput } from '../types/interval';
 import { TimeOrder } from '../types/time-order';
 import { MeetingCollectionQueryArgs, MeetingEntry } from './types';
 

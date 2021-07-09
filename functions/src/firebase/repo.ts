@@ -1,6 +1,6 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { zip } from '../utils/zip';
 import { Identifiable } from '../types/identifiable';
+import { zip } from '../utils/zip';
 import { firebaseAdmin } from './setup';
 
 export class Repo<T extends Identifiable> {

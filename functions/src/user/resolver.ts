@@ -1,5 +1,4 @@
 import { Response } from 'express';
-import { getMergedMeetings } from '../utils/merge-meetings';
 import {
   Arg,
   Args,
@@ -20,6 +19,7 @@ import { Meeting, MeetingCollectionQueryArgs, MeetingEntry } from '../meeting/ty
 import { ScheduleService } from '../schedule/service';
 import { Schedule, ScheduleCollectionQueryArgs, ScheduleEntry } from '../schedule/types';
 import { Principal } from '../security/context';
+import { getMergedMeetings } from '../utils/merge-meetings';
 import { UserService } from './service';
 import { User } from './types';
 
