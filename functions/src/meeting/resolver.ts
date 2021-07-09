@@ -18,11 +18,11 @@ import {
 } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 import { ScheduleService } from '../schedule/service';
-import { Schedule } from '../schedule/types';
+import { Schedule, ScheduleCollectionQueryArgs, ScheduleEntry } from '../schedule/types';
 import { Principal } from '../security/context';
 import { Interval, IntervalInput } from '../types/interval';
 import { UserService } from '../user/service';
-import { User } from '../user/types';
+import { User, UserShallow } from '../user/types';
 import { MeetingService } from './service';
 import { Meeting, MeetingEntry } from './types';
 
@@ -70,32 +70,35 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
   @Query(() => Meeting)
   async meeting(@Args() { id, slug }: QueryMeetingArgs): Promise<MeetingEntry> {
     if (id !== undefined) {
-      return await this.meetingService.findById(id);
+      return this.meetingService.findById(id);
     }
     if (slug !== undefined) {
-      return await this.meetingService.findBySlug(slug);
+      return this.meetingService.findBySlug(slug);
     }
     throw new HttpsError('invalid-argument', 'id or slug must be provided', {
       id: 'invalid-argument',
     });
   }
 
-  @FieldResolver()
-  async owner(@Root() meeting: Meeting): Promise<User | undefined> {
+  @FieldResolver(() => User)
+  async owner(@Root() meeting: Meeting): Promise<UserShallow | undefined> {
     if (meeting.ownerId === undefined) {
       return undefined;
     }
-    return (await this.userService.findById(meeting.ownerId)) as User;
+    return this.userService.findById(meeting.ownerId);
   }
 
-  @FieldResolver()
+  @FieldResolver(() => [Interval])
   intervals(@Root() { intervals }: Meeting): Interval[] {
     return intervals;
   }
 
-  @FieldResolver()
-  async schedules(@Root() meeting: Meeting): Promise<Schedule[]> {
-    return (await this.scheduleService.findAllWithMeetingId(meeting.id)) as Schedule[];
+  @FieldResolver(() => [Schedule])
+  async schedules(
+    @Root() meeting: Meeting,
+    @Args() args?: ScheduleCollectionQueryArgs
+  ): Promise<ScheduleEntry[]> {
+    return this.scheduleService.findAllByMeetingId(meeting.id, args);
   }
 
   @Mutation(() => Meeting)
@@ -104,9 +107,9 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
     @Ctx('principal') principal: Principal
   ): Promise<MeetingEntry> {
     if (principal !== null) {
-      return await this.meetingService.addNew({ ...data, ownerId: principal.id });
+      return this.meetingService.addNew({ ...data, ownerId: principal.id });
     }
-    return await this.meetingService.addNew(data);
+    return this.meetingService.addNew(data);
   }
 
   @Mutation(() => Meeting)
@@ -128,6 +131,6 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
         id: 'permission-denied',
       });
     }
-    return await this.meetingService.edit(id, editArgs);
+    return this.meetingService.edit(id, editArgs);
   }
 }

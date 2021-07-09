@@ -17,7 +17,7 @@ import { Inject, Service } from 'typedi';
 import { MeetingService } from '../meeting/service';
 import { Meeting, MeetingCollectionQueryArgs, MeetingEntry } from '../meeting/types';
 import { ScheduleService } from '../schedule/service';
-import { Schedule } from '../schedule/types';
+import { Schedule, ScheduleCollectionQueryArgs, ScheduleEntry } from '../schedule/types';
 import { Principal } from '../security/context';
 import { UserService } from './service';
 import { User } from './types';
@@ -102,17 +102,20 @@ export class UserResolver {
     return principal as User;
   }
 
-  @FieldResolver(() => Meeting)
+  @FieldResolver(() => [Meeting])
   async meetings(
     @Root() user: User,
-    @Args() args: MeetingCollectionQueryArgs
+    @Args() args?: MeetingCollectionQueryArgs
   ): Promise<MeetingEntry[]> {
-    return await this.meetingService.findAllByOwnerId(user.id, args);
+    return this.meetingService.findAllByOwnerId(user.id, args);
   }
 
-  @FieldResolver()
-  async schedules(@Root() user: User): Promise<Schedule[]> {
-    return (await this.scheduleService.findAllWithUserId(user.id)) as Schedule[];
+  @FieldResolver(() => [Schedule])
+  async schedules(
+    @Root() user: User,
+    @Args() args?: ScheduleCollectionQueryArgs
+  ): Promise<ScheduleEntry[]> {
+    return this.scheduleService.findAllByUserId(user.id, args);
   }
 
   @Mutation(() => User)

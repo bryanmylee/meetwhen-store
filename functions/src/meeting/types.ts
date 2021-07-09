@@ -1,10 +1,10 @@
 import { ArgsType, Field, ObjectType } from 'type-graphql';
-import { Schedule } from '../schedule/types';
+import { Schedule, ScheduleEntry } from '../schedule/types';
 import { CollectionQueryArgs } from '../types/collection-query-args';
 import { Identifiable } from '../types/identifiable';
 import { Interval } from '../types/interval';
 import { TimeOrder } from '../types/time-order';
-import { User } from '../user/types';
+import { User, UserShallow } from '../user/types';
 
 @ArgsType()
 export class MeetingCollectionQueryArgs extends CollectionQueryArgs {
@@ -23,8 +23,8 @@ export class Meeting extends Identifiable {
   @Field()
   slug: string;
 
-  @Field({ nullable: true })
-  owner?: User;
+  @Field(() => User, { nullable: true })
+  owner?: UserShallow;
   ownerId?: string;
 
   @Field(() => [Interval])
@@ -34,7 +34,7 @@ export class Meeting extends Identifiable {
   total: Interval;
 
   @Field(() => [Schedule])
-  schedules: Schedule[];
+  schedules: ScheduleEntry[];
 }
 
 export class MeetingEntry extends Identifiable {

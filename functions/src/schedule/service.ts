@@ -4,7 +4,7 @@ import { MeetingService } from '../meeting/service';
 import { IntervalInput } from '../types/interval';
 import { UserService } from '../user/service';
 import { ScheduleRepo } from './repo';
-import { ScheduleEntry } from './types';
+import { ScheduleCollectionQueryArgs, ScheduleEntry } from './types';
 
 class FindByMeetingUserArgs {
   meetingId: string;
@@ -38,12 +38,18 @@ export class ScheduleService {
     return this.scheduleRepo.findByMeetingUser({ meetingId, userId });
   }
 
-  async findAllWithMeetingId(meetingId: string): Promise<ScheduleEntry[]> {
-    return this.scheduleRepo.findAllByMeetingId(meetingId);
+  async findAllByMeetingId(
+    meetingId: string,
+    args?: ScheduleCollectionQueryArgs
+  ): Promise<ScheduleEntry[]> {
+    return this.scheduleRepo.findAllByMeetingId(meetingId, args);
   }
 
-  async findAllWithUserId(userId: string): Promise<ScheduleEntry[]> {
-    return this.scheduleRepo.findAllByUserId(userId);
+  async findAllByUserId(
+    userId: string,
+    args?: ScheduleCollectionQueryArgs
+  ): Promise<ScheduleEntry[]> {
+    return this.scheduleRepo.findAllByUserId(userId, args);
   }
 
   async addSchedule({ meetingId, userId, intervals }: ScheduleArgs): Promise<ScheduleEntry> {

@@ -1,8 +1,9 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
+import { TimeOrder } from '../types/time-order';
 import { Service } from 'typedi';
 import { Repo } from '../firebase/repo';
 import { getTotalInterval, Interval } from '../types/interval';
-import { ScheduleEntry } from './types';
+import { ScheduleCollectionQueryArgs, ScheduleEntry } from './types';
 
 class FindByMeetingUserArgs {
   meetingId: string;
@@ -53,13 +54,37 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
     return { ...doc.data(), id: doc.id } as ScheduleEntry;
   }
 
-  async findAllByMeetingId(meetingId: string): Promise<ScheduleEntry[]> {
-    const results = await this.repo.where('meetingId', '==', meetingId).get();
+  async findAllByMeetingId(
+    meetingId: string,
+    { order, limit }: ScheduleCollectionQueryArgs = {}
+  ): Promise<ScheduleEntry[]> {
+    let query = this.repo.where('meetingId', '==', meetingId);
+    if (order === TimeOrder.EARLIEST) {
+      query = query.orderBy('total.beg', 'asc').orderBy('total.end', 'asc');
+    } else if (order === TimeOrder.LATEST) {
+      query = query.orderBy('total.end', 'desc').orderBy('total.beg', 'desc');
+    }
+    if (limit !== undefined) {
+      query = query.limit(limit);
+    }
+    const results = await query.get();
     return results.docs.map((doc) => ({ ...doc.data(), id: doc.id } as ScheduleEntry));
   }
 
-  async findAllByUserId(userId: string): Promise<ScheduleEntry[]> {
-    const results = await this.repo.where('userId', '==', userId).get();
+  async findAllByUserId(
+    userId: string,
+    { order, limit }: ScheduleCollectionQueryArgs = {}
+  ): Promise<ScheduleEntry[]> {
+    let query = this.repo.where('userId', '==', userId);
+    if (order === TimeOrder.EARLIEST) {
+      query = query.orderBy('total.beg', 'asc').orderBy('total.end', 'asc');
+    } else if (order === TimeOrder.LATEST) {
+      query = query.orderBy('total.end', 'desc').orderBy('total.beg', 'desc');
+    }
+    if (limit !== undefined) {
+      query = query.limit(limit);
+    }
+    const results = await query.get();
     return results.docs.map((doc) => ({ ...doc.data(), id: doc.id } as ScheduleEntry));
   }
 
