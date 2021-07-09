@@ -2,6 +2,7 @@ import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { Service } from 'typedi';
 import { Repo } from '../firebase/repo';
 import { getTotalInterval, Interval } from '../types/interval';
+import { getKeyPaths } from '../types/beg-or-end';
 import { TimeOrder } from '../types/time-order';
 import { ScheduleCollectionQueryArgs, ScheduleEntry } from './types';
 
@@ -56,20 +57,20 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
 
   async findAllByMeetingId(
     meetingId: string,
-    { before, after, order, limit }: ScheduleCollectionQueryArgs = {}
+    { key, before, after, order, limit }: ScheduleCollectionQueryArgs = {}
   ): Promise<ScheduleEntry[]> {
     let query = this.repo.where('meetingId', '==', meetingId);
-    // property for first sort and inequality filters must be equal.
+    const { primaryKey, altKey } = getKeyPaths(key);
     if (before !== undefined) {
-      query = query.where('total.beg', '<=', before);
+      query = query.where('total.' + primaryKey, '<=', before);
     }
     if (after !== undefined) {
-      query = query.where('total.beg', '>=', after);
+      query = query.where('total.' + primaryKey, '>=', after);
     }
     if (order === TimeOrder.EARLIEST) {
-      query = query.orderBy('total.beg', 'asc').orderBy('total.end', 'asc');
+      query = query.orderBy('total.' + primaryKey, 'asc').orderBy('total.' + altKey, 'asc');
     } else if (order === TimeOrder.LATEST) {
-      query = query.orderBy('total.beg', 'desc').orderBy('total.end', 'desc');
+      query = query.orderBy('total.' + primaryKey, 'desc').orderBy('total.' + altKey, 'desc');
     }
     if (limit !== undefined) {
       query = query.limit(limit);
@@ -80,20 +81,20 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
 
   async findAllByUserId(
     userId: string,
-    { before, after, order, limit }: ScheduleCollectionQueryArgs = {}
+    { key, before, after, order, limit }: ScheduleCollectionQueryArgs = {}
   ): Promise<ScheduleEntry[]> {
     let query = this.repo.where('userId', '==', userId);
-    // property for first sort and inequality filters must be equal.
+    const { primaryKey, altKey } = getKeyPaths(key);
     if (before !== undefined) {
-      query = query.where('total.beg', '<=', before);
+      query = query.where('total.' + primaryKey, '<=', before);
     }
     if (after !== undefined) {
-      query = query.where('total.beg', '>=', after);
+      query = query.where('total.' + primaryKey, '>=', after);
     }
     if (order === TimeOrder.EARLIEST) {
-      query = query.orderBy('total.beg', 'asc').orderBy('total.end', 'asc');
+      query = query.orderBy('total.' + primaryKey, 'asc').orderBy('total.' + altKey, 'asc');
     } else if (order === TimeOrder.LATEST) {
-      query = query.orderBy('total.beg', 'desc').orderBy('total.end', 'desc');
+      query = query.orderBy('total.' + primaryKey, 'desc').orderBy('total.' + altKey, 'desc');
     }
     if (limit !== undefined) {
       query = query.limit(limit);

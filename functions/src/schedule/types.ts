@@ -3,11 +3,15 @@ import { Meeting } from '../meeting/types';
 import { CollectionQueryArgs } from '../types/collection-query-args';
 import { Identifiable } from '../types/identifiable';
 import { Interval } from '../types/interval';
+import { BegOrEnd } from '../types/beg-or-end';
 import { TimeOrder } from '../types/time-order';
 import { User } from '../user/types';
 
 @ArgsType()
 export class ScheduleCollectionQueryArgs extends CollectionQueryArgs {
+  @Field(() => BegOrEnd, { nullable: true })
+  key?: BegOrEnd;
+
   @Field(() => Int, { nullable: true })
   before?: number;
 
