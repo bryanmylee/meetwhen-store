@@ -106,7 +106,7 @@ export class MeetingResolver implements ResolverInterface<Meeting> {
     @Arg('data') data: AddMeetingInput,
     @Ctx('principal') principal: Principal
   ): Promise<MeetingEntry> {
-    if (principal !== null) {
+    if (principal !== null && principal.guestOf === null) {
       return this.meetingService.addNew({ ...data, ownerId: principal.id });
     }
     return this.meetingService.addNew(data);
