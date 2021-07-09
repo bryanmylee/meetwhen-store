@@ -1,4 +1,4 @@
-import { ArgsType, Field, ObjectType } from 'type-graphql';
+import { ArgsType, Field, Int, ObjectType } from 'type-graphql';
 import { Meeting } from '../meeting/types';
 import { CollectionQueryArgs } from '../types/collection-query-args';
 import { Identifiable } from '../types/identifiable';
@@ -8,6 +8,12 @@ import { User } from '../user/types';
 
 @ArgsType()
 export class ScheduleCollectionQueryArgs extends CollectionQueryArgs {
+  @Field(() => Int, { nullable: true })
+  before?: number;
+
+  @Field(() => Int, { nullable: true })
+  after?: number;
+
   @Field(() => TimeOrder, { nullable: true })
   order?: TimeOrder;
 }

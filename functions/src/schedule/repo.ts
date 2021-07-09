@@ -56,13 +56,20 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
 
   async findAllByMeetingId(
     meetingId: string,
-    { order, limit }: ScheduleCollectionQueryArgs = {}
+    { before, after, order, limit }: ScheduleCollectionQueryArgs = {}
   ): Promise<ScheduleEntry[]> {
     let query = this.repo.where('meetingId', '==', meetingId);
+    // property for first sort and inequality filters must be equal.
+    if (before !== undefined) {
+      query = query.where('total.beg', '<=', before);
+    }
+    if (after !== undefined) {
+      query = query.where('total.beg', '>=', after);
+    }
     if (order === TimeOrder.EARLIEST) {
       query = query.orderBy('total.beg', 'asc').orderBy('total.end', 'asc');
     } else if (order === TimeOrder.LATEST) {
-      query = query.orderBy('total.end', 'desc').orderBy('total.beg', 'desc');
+      query = query.orderBy('total.beg', 'desc').orderBy('total.end', 'desc');
     }
     if (limit !== undefined) {
       query = query.limit(limit);
@@ -73,13 +80,20 @@ export class ScheduleRepo extends Repo<ScheduleEntry> {
 
   async findAllByUserId(
     userId: string,
-    { order, limit }: ScheduleCollectionQueryArgs = {}
+    { before, after, order, limit }: ScheduleCollectionQueryArgs = {}
   ): Promise<ScheduleEntry[]> {
     let query = this.repo.where('userId', '==', userId);
+    // property for first sort and inequality filters must be equal.
+    if (before !== undefined) {
+      query = query.where('total.beg', '<=', before);
+    }
+    if (after !== undefined) {
+      query = query.where('total.beg', '>=', after);
+    }
     if (order === TimeOrder.EARLIEST) {
       query = query.orderBy('total.beg', 'asc').orderBy('total.end', 'asc');
     } else if (order === TimeOrder.LATEST) {
-      query = query.orderBy('total.end', 'desc').orderBy('total.beg', 'desc');
+      query = query.orderBy('total.beg', 'desc').orderBy('total.end', 'desc');
     }
     if (limit !== undefined) {
       query = query.limit(limit);

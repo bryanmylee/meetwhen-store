@@ -54,12 +54,7 @@ const compareEarliest = <T extends MergableMeeting>(a: T, b: T) => {
   return a.total.beg - b.total.beg;
 };
 
-const compareLatest = <T extends MergableMeeting>(a: T, b: T) => {
-  if (a.total.end === b.total.end) {
-    return b.total.beg - a.total.beg;
-  }
-  return b.total.end - a.total.end;
-};
+const compareLatest = <T extends MergableMeeting>(a: T, b: T) => compareEarliest(b, a);
 
 const getDistinct = <T extends MergableMeeting>(meetings: T[]) =>
   Object.values(recordById(meetings));

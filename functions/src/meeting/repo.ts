@@ -42,13 +42,20 @@ export class MeetingRepo extends Repo<MeetingEntry> {
 
   async findAllByOwnerId(
     ownerId: string,
-    { order, limit }: MeetingCollectionQueryArgs = {}
+    { before, after, order, limit }: MeetingCollectionQueryArgs = {}
   ): Promise<MeetingEntry[]> {
     let query = this.repo.where('ownerId', '==', ownerId);
+    // property for first sort and inequality filters must be equal.
+    if (before !== undefined) {
+      query = query.where('total.beg', '<=', before);
+    }
+    if (after !== undefined) {
+      query = query.where('total.beg', '>=', after);
+    }
     if (order === TimeOrder.EARLIEST) {
       query = query.orderBy('total.beg', 'asc').orderBy('total.end', 'asc');
     } else if (order === TimeOrder.LATEST) {
-      query = query.orderBy('total.end', 'desc').orderBy('total.beg', 'desc');
+      query = query.orderBy('total.beg', 'desc').orderBy('total.end', 'desc');
     }
     if (limit !== undefined) {
       query = query.limit(limit);
