@@ -47,9 +47,9 @@ export class MeetingRepo extends Repo<MeetingEntry> {
     let query = this.repo.where('ownerId', '==', ownerId);
     if (order !== undefined) {
       if (order === TimeOrder.EARLIEST) {
-        query = query.orderBy('total.beg', 'asc');
+        query = query.orderBy('total.beg', 'asc').orderBy('total.end', 'asc');
       } else {
-        query = query.orderBy('total.end', 'desc');
+        query = query.orderBy('total.end', 'desc').orderBy('total.beg', 'desc');
       }
     }
     if (limit !== undefined) {
