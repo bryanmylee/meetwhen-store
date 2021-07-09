@@ -1,3 +1,4 @@
+import { recordById } from './record-by-id';
 import { TimeOrder } from '../types/time-order';
 import { Meeting, MeetingCollectionQueryArgs } from '../meeting/types';
 
@@ -60,14 +61,5 @@ const compareLatest = <T extends MergableMeeting>(a: T, b: T) => {
   return b.total.end - a.total.end;
 };
 
-const getDistinct = <T extends MergableMeeting>(meetings: T[]) => {
-  const visited = new Set<string>();
-  const result: T[] = [];
-  meetings.forEach((meeting) => {
-    if (!visited.has(meeting.id)) {
-      result.push(meeting);
-      visited.add(meeting.id);
-    }
-  });
-  return result;
-};
+const getDistinct = <T extends MergableMeeting>(meetings: T[]) =>
+  Object.values(recordById(meetings));
