@@ -6,6 +6,7 @@ import { MeetingEntry } from './types';
 
 class AddNewArgs {
   name: string;
+  emoji: string;
   slug: string;
   ownerId?: string;
   intervals: IntervalInput[];
@@ -13,6 +14,7 @@ class AddNewArgs {
 
 class EditArgs {
   name?: string;
+  emoji?: string;
 }
 
 @Service()

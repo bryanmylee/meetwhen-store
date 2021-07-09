@@ -10,6 +10,9 @@ export class Meeting extends Identifiable {
   name: string;
 
   @Field()
+  emoji: string;
+
+  @Field()
   slug: string;
 
   @Field({ nullable: true })
@@ -25,6 +28,7 @@ export class Meeting extends Identifiable {
 
 export class MeetingEntry extends Identifiable {
   name: string;
+  emoji: string;
   slug: string;
   ownerId?: string;
   intervals: Interval[];

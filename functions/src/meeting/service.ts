@@ -9,12 +9,14 @@ const MAX_ATTEMPTS = 5;
 
 class AddNewArgs {
   name: string;
+  emoji?: string;
   ownerId?: string;
   intervals: IntervalInput[];
 }
 
 class EditArgs {
   name?: string;
+  emoji?: string;
 }
 
 @Service()
@@ -51,7 +53,11 @@ export class MeetingService {
   }
 
   async addNew(newMeeting: AddNewArgs): Promise<MeetingEntry> {
-    return this.repo.addNew({ ...newMeeting, slug: await this.generateSlug() });
+    return this.repo.addNew({
+      ...newMeeting,
+      emoji: newMeeting.emoji ?? '📘',
+      slug: await this.generateSlug(),
+    });
   }
 
   async edit(id: string, editArgs: EditArgs): Promise<MeetingEntry> {
