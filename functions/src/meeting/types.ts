@@ -1,10 +1,10 @@
 import { ArgsType, Field, ObjectType } from 'type-graphql';
 import { Schedule } from '../schedule/types';
+import { CollectionQueryArgs } from '../types/collection-query-args';
 import { Identifiable } from '../types/identifiable';
 import { Interval } from '../types/interval';
-import { User } from '../user/types';
-import { CollectionQueryArgs } from '../types/collection-query-args';
 import { TimeOrder } from '../types/time-order';
+import { User } from '../user/types';
 
 @ArgsType()
 export class MeetingCollectionQueryArgs extends CollectionQueryArgs {

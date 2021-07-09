@@ -1,9 +1,9 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { TimeOrder } from '../types/time-order';
 import { Service } from 'typedi';
 import { Repo } from '../firebase/repo';
 import { Interval, IntervalInput } from '../types/interval';
-import { MeetingEntry, MeetingCollectionQueryArgs } from './types';
+import { TimeOrder } from '../types/time-order';
+import { MeetingCollectionQueryArgs, MeetingEntry } from './types';
 
 class AddNewArgs {
   name: string;

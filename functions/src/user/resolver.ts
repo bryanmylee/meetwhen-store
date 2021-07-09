@@ -15,7 +15,7 @@ import {
 } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 import { MeetingService } from '../meeting/service';
-import { Meeting, MeetingEntry, MeetingCollectionQueryArgs } from '../meeting/types';
+import { Meeting, MeetingCollectionQueryArgs, MeetingEntry } from '../meeting/types';
 import { ScheduleService } from '../schedule/service';
 import { Schedule } from '../schedule/types';
 import { Principal } from '../security/context';

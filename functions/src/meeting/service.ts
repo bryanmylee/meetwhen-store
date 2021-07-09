@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 import { Inject, Service } from 'typedi';
 import { IntervalInput } from '../types/interval';
 import { MeetingRepo } from './repo';
-import { MeetingEntry, MeetingCollectionQueryArgs } from './types';
+import { MeetingCollectionQueryArgs, MeetingEntry } from './types';
 
 const MAX_ATTEMPTS = 5;
 
