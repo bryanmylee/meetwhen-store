@@ -21,6 +21,9 @@ class EditArgs {
   color?: string;
 }
 
+const DEFAULT_EMOJI = '📘';
+const DEFAULT_COLOR = '#0aadff';
+
 @Service()
 export class MeetingService {
   @Inject()
@@ -64,7 +67,8 @@ export class MeetingService {
   async addNew(newMeeting: AddNewArgs): Promise<MeetingEntry> {
     return this.repo.addNew({
       ...newMeeting,
-      emoji: newMeeting.emoji ?? '📘',
+      emoji: newMeeting.emoji ?? DEFAULT_EMOJI,
+      color: newMeeting.color ?? DEFAULT_COLOR,
       slug: await this.generateSlug(),
     });
   }

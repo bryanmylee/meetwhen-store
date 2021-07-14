@@ -9,7 +9,7 @@ import { MeetingCollectionQueryArgs, MeetingEntry } from './types';
 class AddNewArgs {
   name: string;
   emoji: string;
-  color?: string;
+  color: string;
   slug: string;
   ownerId?: string;
   intervals: IntervalInput[];
