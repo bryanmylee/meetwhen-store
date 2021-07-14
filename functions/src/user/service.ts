@@ -157,7 +157,7 @@ export class UserService {
   async logout(response: Response): Promise<boolean> {
     // Signal to the client to delete the access token cookie.
     // '' empty string clears the header.
-    response.setHeader('__token', '_');
+    response.setHeader('__access-token', '_');
     return true;
   }
 }
