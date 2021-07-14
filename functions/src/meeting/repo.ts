@@ -9,6 +9,7 @@ import { MeetingCollectionQueryArgs, MeetingEntry } from './types';
 class AddNewArgs {
   name: string;
   emoji: string;
+  color?: string;
   slug: string;
   ownerId?: string;
   intervals: IntervalInput[];
@@ -17,6 +18,7 @@ class AddNewArgs {
 class EditArgs {
   name?: string;
   emoji?: string;
+  color?: string;
 }
 
 @Service()

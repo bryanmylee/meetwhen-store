@@ -10,6 +10,7 @@ const MAX_ATTEMPTS = 5;
 class AddNewArgs {
   name: string;
   emoji?: string;
+  color?: string;
   ownerId?: string;
   intervals: IntervalInput[];
 }
@@ -17,6 +18,7 @@ class AddNewArgs {
 class EditArgs {
   name?: string;
   emoji?: string;
+  color?: string;
 }
 
 @Service()

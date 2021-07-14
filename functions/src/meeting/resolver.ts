@@ -1,4 +1,4 @@
-import { Length } from 'class-validator';
+import { IsHexColor, Length } from 'class-validator';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import {
   Arg,
@@ -46,6 +46,10 @@ class AddMeetingInput implements Partial<Meeting> {
 
   @Field({ nullable: true })
   emoji?: string;
+
+  @Field({ nullable: true })
+  @IsHexColor()
+  color?: string;
 }
 
 @InputType()
@@ -59,6 +63,10 @@ class EditMeetingInput implements Partial<Meeting> {
 
   @Field({ nullable: true })
   emoji?: string;
+
+  @Field({ nullable: true })
+  @IsHexColor()
+  color?: string;
 }
 
 @Service()
