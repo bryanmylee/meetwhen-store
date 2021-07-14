@@ -21,7 +21,7 @@ import { Schedule, ScheduleCollectionQueryArgs, ScheduleEntry } from '../schedul
 import { Principal } from '../security/context';
 import { getMergedMeetings } from '../utils/merge-meetings';
 import { UserService } from './service';
-import { User } from './types';
+import { User, UserShallow } from './types';
 
 @InputType()
 class AddUserInput implements Partial<User> {
@@ -138,7 +138,7 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
-  async addUser(@Arg('data') data: AddUserInput, @Ctx('res') res: Response): Promise<User> {
+  async addUser(@Arg('data') data: AddUserInput, @Ctx('res') res: Response): Promise<UserShallow> {
     await this.userService.addNew(data);
     return this.login(data, res);
   }
@@ -147,7 +147,7 @@ export class UserResolver {
   async addGuestUser(
     @Arg('data') data: AddGuestUserInput,
     @Ctx('res') res: Response
-  ): Promise<User> {
+  ): Promise<UserShallow> {
     const user = await this.userService.addNewGuest(data);
     return this.login({ email: user.email, password: data.password }, res);
   }
@@ -157,22 +157,21 @@ export class UserResolver {
   async editUser(
     @Arg('data') data: EditUserInput,
     @Ctx('principal') principal: Principal
-  ): Promise<User> {
-    return (await this.userService.edit({ id: principal!.id, ...data })) as User;
+  ): Promise<UserShallow> {
+    return this.userService.edit({ id: principal!.id, ...data });
   }
 
   @Mutation(() => User)
-  async login(@Arg('data') data: LoginInput, @Ctx('res') res: Response): Promise<User> {
-    const { accessToken, ...user } = await this.userService.login(data);
-    res.setHeader('__access-token', accessToken);
-    return user as User;
+  async login(@Arg('data') data: LoginInput, @Ctx('res') res: Response): Promise<UserShallow> {
+    return this.userService.login(data, res);
   }
 
   @Mutation(() => User)
-  async loginGuest(@Arg('data') data: LoginGuestInput, @Ctx('res') res: Response): Promise<User> {
-    const { accessToken, ...user } = await this.userService.loginGuest(data);
-    res.setHeader('__access-token', accessToken);
-    return user as User;
+  async loginGuest(
+    @Arg('data') data: LoginGuestInput,
+    @Ctx('res') res: Response
+  ): Promise<UserShallow> {
+    return this.userService.loginGuest(data, res);
   }
 
   @Mutation(() => Boolean)

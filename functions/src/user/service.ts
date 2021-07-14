@@ -36,6 +36,8 @@ class LoginGuestArgs {
   password: string;
 }
 
+const ACCESS_TOKEN_HEADER = '__access-token';
+
 @Service()
 export class UserService {
   async findById(id: string): Promise<UserShallow> {
@@ -126,7 +128,10 @@ export class UserService {
     }
   }
 
-  async login({ email, password }: LoginArgs): Promise<UserShallow & { accessToken: string }> {
+  async login(
+    { email, password }: LoginArgs,
+    response: Response
+  ): Promise<UserShallow & { accessToken: string }> {
     const DAYS_IN_MS = 86_400_000;
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
@@ -134,6 +139,7 @@ export class UserService {
       const accessToken = await firebaseAdmin
         .auth()
         .createSessionCookie(idToken, { expiresIn: 5 * DAYS_IN_MS });
+      response.setHeader(ACCESS_TOKEN_HEADER, accessToken);
       return {
         id: user.uid,
         email: user.email!,
@@ -145,19 +151,18 @@ export class UserService {
     }
   }
 
-  async loginGuest({
-    meetingId,
-    username,
-    password,
-  }: LoginGuestArgs): Promise<UserShallow & { accessToken: string }> {
+  async loginGuest(
+    { meetingId, username, password }: LoginGuestArgs,
+    response: Response
+  ): Promise<UserShallow & { accessToken: string }> {
     const email = getGuestEmail(meetingId, username);
-    return this.login({ email, password });
+    return this.login({ email, password }, response);
   }
 
   async logout(response: Response): Promise<boolean> {
     // Signal to the client to delete the access token cookie.
     // '' empty string clears the header.
-    response.setHeader('__access-token', '_');
+    response.setHeader(ACCESS_TOKEN_HEADER, '_');
     return true;
   }
 }
