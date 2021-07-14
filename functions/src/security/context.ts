@@ -16,12 +16,12 @@ export type Context = ExpressContext & { principal: Principal };
  */
 export const context: ContextFunction<ExpressContext, unknown> = async ({ req, res }) => {
   try {
-    const idToken = getBearerToken(req.headers.authorization) ?? '';
-    const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken);
+    const accessToken = getAccessTokenFromBearer(req.headers.authorization) ?? '';
+    const decodedClaims = await firebaseAdmin.auth().verifySessionCookie(accessToken);
     const principal: Principal = {
-      id: decodedToken.uid,
-      email: decodedToken.email!,
-      ...getDecodedDisplayName(decodedToken.name),
+      id: decodedClaims.uid,
+      email: decodedClaims.email!,
+      ...getDecodedDisplayName(decodedClaims.name),
     };
     return { req, res, principal } as Context;
   } catch (error) {
@@ -29,7 +29,7 @@ export const context: ContextFunction<ExpressContext, unknown> = async ({ req, r
   }
 };
 
-const getBearerToken = (authorization: string | undefined) => {
+const getAccessTokenFromBearer = (authorization: string | undefined) => {
   if (authorization === undefined) {
     return undefined;
   }

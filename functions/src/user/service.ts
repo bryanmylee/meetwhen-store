@@ -127,9 +127,13 @@ export class UserService {
   }
 
   async login({ email, password }: LoginArgs): Promise<UserShallow & { accessToken: string }> {
+    const DAYS_IN_MS = 86_400_000;
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
-      const accessToken = await user.getIdToken();
+      const idToken = await user.getIdToken();
+      const accessToken = await firebaseAdmin
+        .auth()
+        .createSessionCookie(idToken, { expiresIn: 5 * DAYS_IN_MS });
       return {
         id: user.uid,
         email: user.email!,
