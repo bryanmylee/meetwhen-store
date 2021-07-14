@@ -43,6 +43,9 @@ class AddMeetingInput implements Partial<Meeting> {
 
   @Field(() => [IntervalInput])
   intervals: IntervalInput[];
+
+  @Field({ nullable: true })
+  emoji?: string;
 }
 
 @InputType()
@@ -53,6 +56,9 @@ class EditMeetingInput implements Partial<Meeting> {
   @Field({ nullable: true })
   @Length(1, 50)
   name?: string;
+
+  @Field({ nullable: true })
+  emoji?: string;
 }
 
 @Service()
