@@ -1,11 +1,13 @@
 import { HttpsError } from 'firebase-functions/lib/providers/https';
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 import { Inject, Service } from 'typedi';
 import { IntervalInput } from '../types/interval';
 import { MeetingRepo } from './repo';
 import { MeetingCollectionQueryArgs, MeetingEntry } from './types';
 
-const MAX_ATTEMPTS = 5;
+// ~919 years before 1% collision at 1000 events per hour
+const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 12);
+const MAX_SLUG_ATTEMPTS = 5;
 
 class AddNewArgs {
   name: string;
@@ -49,8 +51,8 @@ export class MeetingService {
   }
 
   private async generateSlug() {
-    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-      const slug = nanoid(12); // ~1000 years before 1% collision at 1000 events per hour
+    for (let attempt = 1; attempt <= MAX_SLUG_ATTEMPTS; attempt++) {
+      const slug = nanoid();
       try {
         await this.findBySlug(slug);
       } catch (error) {
