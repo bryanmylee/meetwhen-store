@@ -126,14 +126,14 @@ export class UserService {
     }
   }
 
-  async login({ email, password }: LoginArgs): Promise<UserShallow & { token: string }> {
+  async login({ email, password }: LoginArgs): Promise<UserShallow & { accessToken: string }> {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
-      const token = await user.getIdToken();
+      const accessToken = await user.getIdToken();
       return {
         id: user.uid,
         email: user.email!,
-        token,
+        accessToken,
         ...getDecodedDisplayName(user.displayName!),
       };
     } catch (error) {
@@ -145,7 +145,7 @@ export class UserService {
     meetingId,
     username,
     password,
-  }: LoginGuestArgs): Promise<UserShallow & { token: string }> {
+  }: LoginGuestArgs): Promise<UserShallow & { accessToken: string }> {
     const email = getGuestEmail(meetingId, username);
     return this.login({ email, password });
   }
