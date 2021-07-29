@@ -1,6 +1,6 @@
 import { MeetingCollectionQueryArgs } from '../meeting/types';
 import { recordById } from './record-by-id';
-import { MergableMeeting, getCompareFn } from './sort-meetings';
+import { getCompareFn, MergableMeeting } from './sort-meetings';
 
 export const getMergedMeetings = <T extends MergableMeeting>(
   a: T[],

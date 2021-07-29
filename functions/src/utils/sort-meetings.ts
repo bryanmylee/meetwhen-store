@@ -1,6 +1,6 @@
+import { Meeting, MeetingCollectionQueryArgs, MeetingEntry } from '../meeting/types';
 import { BegOrEnd, getKeyPaths } from '../types/beg-or-end';
 import { TimeOrder } from '../types/time-order';
-import { Meeting, MeetingCollectionQueryArgs, MeetingEntry } from '../meeting/types';
 
 export type MergableMeeting = Pick<Meeting, 'id' | 'total'>;
 

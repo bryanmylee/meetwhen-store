@@ -1,5 +1,4 @@
 import { Response } from 'express';
-import { sortMeetings } from '../utils/sort-meetings';
 import {
   Arg,
   Args,
@@ -21,6 +20,7 @@ import { ScheduleService } from '../schedule/service';
 import { Schedule, ScheduleCollectionQueryArgs, ScheduleEntry } from '../schedule/types';
 import { Principal } from '../security/context';
 import { getMergedMeetings } from '../utils/merge-meetings';
+import { sortMeetings } from '../utils/sort-meetings';
 import { UserService } from './service';
 import { User, UserShallow } from './types';
 
