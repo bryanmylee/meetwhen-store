@@ -1,33 +1,32 @@
-import { Meeting, MeetingCollectionQueryArgs } from '../meeting/types';
-import { TimeOrder } from '../types/time-order';
+import { MeetingCollectionQueryArgs } from '../meeting/types';
 import { recordById } from './record-by-id';
-
-type MergableMeeting = Pick<Meeting, 'id' | 'total'>;
+import { MergableMeeting, getCompareFn } from './sort-meetings';
 
 export const getMergedMeetings = <T extends MergableMeeting>(
   a: T[],
   b: T[],
-  { order, limit }: MeetingCollectionQueryArgs = {}
+  { order, limit, key }: MeetingCollectionQueryArgs = {}
 ): T[] => {
   if (a.length === 0 || b.length === 0) {
     return [...a, ...b];
   }
-  const merged = getDistinct(getMergeSorted(a, b, { order }));
+  const mergeSorted = getMergeSorted(a, b, { order, key });
+  const distinctMerged = getDistinct(mergeSorted);
   if (limit === undefined) {
-    return merged;
+    return distinctMerged;
   }
-  return merged.slice(0, limit);
+  return distinctMerged.slice(0, limit);
 };
 
 const getMergeSorted = <T extends MergableMeeting>(
   a: T[],
   b: T[],
-  { order }: MeetingCollectionQueryArgs = {}
+  { order, key }: MeetingCollectionQueryArgs = {}
 ): T[] => {
-  const compareFn = order === TimeOrder.EARLIEST ? compareEarliest : compareLatest;
   if (order === undefined) {
     return [...a, ...b];
   }
+  const compareFn = getCompareFn({ order, key });
   const result: T[] = [];
   let i = 0;
   let j = 0;
@@ -46,15 +45,6 @@ const getMergeSorted = <T extends MergableMeeting>(
   }
   return result;
 };
-
-const compareEarliest = <T extends MergableMeeting>(a: T, b: T) => {
-  if (a.total.beg === b.total.beg) {
-    return a.total.end - b.total.end;
-  }
-  return a.total.beg - b.total.beg;
-};
-
-const compareLatest = <T extends MergableMeeting>(a: T, b: T) => compareEarliest(b, a);
 
 const getDistinct = <T extends MergableMeeting>(meetings: T[]) =>
   Object.values(recordById(meetings));

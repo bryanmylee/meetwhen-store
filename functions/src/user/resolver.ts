@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { sortMeetings } from '../utils/sort-meetings';
 import {
   Arg,
   Args,
@@ -123,9 +124,11 @@ export class UserResolver {
   ): Promise<MeetingEntry[]> {
     const owned = await this.meetingService.findAllByOwnerId(user.id, args);
     const joinedSchedules = await this.scheduleService.findAllByUserId(user.id, args);
+    // joinedMeetings are sorted by the schedules they were sorted in.
     const joined = await this.meetingService.populate(
       joinedSchedules.map(({ meetingId }) => meetingId)
     );
+    sortMeetings(joined, args);
     return getMergedMeetings(owned, joined, args);
   }
 
