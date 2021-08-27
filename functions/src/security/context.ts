@@ -16,8 +16,8 @@ export type Context = ExpressContext & { principal: Principal };
  */
 export const context: ContextFunction<ExpressContext, unknown> = async ({ req, res }) => {
   try {
-    const accessToken = getAccessTokenFromBearer(req.headers.authorization) ?? '';
-    const decodedClaims = await firebaseAdmin.auth().verifySessionCookie(accessToken);
+    const sessionCookie = getSessionCookieFromBearer(req.headers.authorization) ?? '';
+    const decodedClaims = await firebaseAdmin.auth().verifySessionCookie(sessionCookie);
     const principal: Principal = {
       id: decodedClaims.uid,
       email: decodedClaims.email!,
@@ -29,7 +29,7 @@ export const context: ContextFunction<ExpressContext, unknown> = async ({ req, r
   }
 };
 
-const getAccessTokenFromBearer = (authorization: string | undefined) => {
+const getSessionCookieFromBearer = (authorization: string | undefined) => {
   if (authorization === undefined) {
     return undefined;
   }
