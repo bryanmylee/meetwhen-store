@@ -49,7 +49,7 @@ export class UserService {
         ...getDecodedDisplayName(record.displayName!),
       };
     } catch (error) {
-      throw handleError(error);
+      throw handleError(error as AuthError);
     }
   }
 
@@ -70,7 +70,7 @@ export class UserService {
         guestOf: null,
       };
     } catch (error) {
-      throw handleError(error);
+      throw handleError(error as AuthError);
     }
   }
 
@@ -91,7 +91,7 @@ export class UserService {
         guestOf: meetingId,
       };
     } catch (error) {
-      throw handleError(error);
+      throw handleError(error as AuthError);
     }
   }
 
@@ -115,7 +115,7 @@ export class UserService {
         ...getDecodedDisplayName(record.displayName!),
       };
     } catch (error) {
-      throw handleError(error);
+      throw handleError(error as AuthError);
     }
   }
 
@@ -124,7 +124,7 @@ export class UserService {
       await firebaseAdmin.auth().deleteUser(id);
       await this.logout(response);
     } catch (error) {
-      throw handleError(error);
+      throw handleError(error as AuthError);
     }
   }
 
@@ -147,7 +147,7 @@ export class UserService {
         ...getDecodedDisplayName(user.displayName!),
       };
     } catch (error) {
-      throw handleError(error);
+      throw handleError(error as AuthError);
     }
   }
 
