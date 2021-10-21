@@ -135,10 +135,14 @@ export class UserService {
     const DAYS_IN_MS = 86_400_000;
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
+      // audience = meetwhen-store
+      // issuer   = https://securetoken.google.com/meetwhen-store
       const idToken = await user.getIdToken();
+      // audience = meetwhen-store
+      // issuer   = https://session.firebase.google.com/meetwhen-store
       const sessionCookie = await firebaseAdmin
         .auth()
-        .createSessionCookie(idToken, { expiresIn: 5 * DAYS_IN_MS });
+        .createSessionCookie(idToken, { expiresIn: 14 * DAYS_IN_MS });
       response.setHeader(SESSION_COOKIE_HEADER, sessionCookie);
       return {
         id: user.uid,
