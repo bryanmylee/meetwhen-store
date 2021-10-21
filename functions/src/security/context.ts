@@ -1,7 +1,6 @@
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express';
 import { firebaseAdmin } from '../firebase/setup';
-import { getDecodedDisplayName } from '../user/service';
 import { UserShallow } from '../user/types';
 
 export type Principal = UserShallow | null;
@@ -17,11 +16,12 @@ export type Context = ExpressContext & { principal: Principal };
 export const context: ContextFunction<ExpressContext, unknown> = async ({ req, res }) => {
   try {
     const sessionCookie = getSessionCookieFromBearer(req.headers.authorization) ?? '';
-    const decodedClaims = await firebaseAdmin.auth().verifySessionCookie(sessionCookie);
+    const decodedIdToken = await firebaseAdmin.auth().verifySessionCookie(sessionCookie);
     const principal: Principal = {
-      id: decodedClaims.uid,
-      email: decodedClaims.email!,
-      ...getDecodedDisplayName(decodedClaims.name),
+      id: decodedIdToken.uid,
+      email: decodedIdToken.email!,
+      name: decodedIdToken.name!,
+      guestOf: decodedIdToken.guestOf,
     };
     return { req, res, principal } as Context;
   } catch (error) {

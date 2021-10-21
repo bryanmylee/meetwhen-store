@@ -46,7 +46,8 @@ export class UserService {
       return {
         id: record.uid,
         email: record.email!,
-        ...getDecodedDisplayName(record.displayName!),
+        name: record.displayName!,
+        guestOf: record.customClaims?.guestOf,
       };
     } catch (error) {
       throw handleError(error as AuthError);
@@ -59,9 +60,12 @@ export class UserService {
     }
     try {
       const record = await firebaseAdmin.auth().createUser({
-        displayName: getEncodedDisplayName(name),
+        displayName: name,
         email,
         password: password,
+      });
+      firebaseAdmin.auth().setCustomUserClaims(record.uid, {
+        guestOf: null,
       });
       return {
         id: record.uid,
@@ -80,9 +84,12 @@ export class UserService {
     }
     try {
       const record = await firebaseAdmin.auth().createUser({
-        displayName: getEncodedDisplayName(username, meetingId),
+        displayName: username,
         email: getGuestEmail(meetingId, username),
         password: password,
+      });
+      firebaseAdmin.auth().setCustomUserClaims(record.uid, {
+        guestOf: meetingId,
       });
       return {
         id: record.uid,
@@ -97,22 +104,16 @@ export class UserService {
 
   async edit({ id, ...args }: EditArgs): Promise<UserShallow> {
     try {
-      // manually handle display name edit due to custom encoding.
-      const user = await this.findById(id);
-      const { guestOf } = getDecodedDisplayName(user.name);
-      const displayName =
-        args.name !== undefined
-          ? getEncodedDisplayName(args.name, guestOf ?? undefined)
-          : user.name;
       const record = await firebaseAdmin.auth().updateUser(id, {
         email: args.email,
-        displayName,
+        displayName: args.name,
         password: args.password,
       });
       return {
         id: record.uid,
         email: record.email!,
-        ...getDecodedDisplayName(record.displayName!),
+        name: record.displayName!,
+        guestOf: record.customClaims?.guestOf,
       };
     } catch (error) {
       throw handleError(error as AuthError);
@@ -144,11 +145,10 @@ export class UserService {
         .auth()
         .createSessionCookie(idToken, { expiresIn: 14 * DAYS_IN_MS });
       response.setHeader(SESSION_COOKIE_HEADER, sessionCookie);
+      const record = await this.findById(user.uid);
       return {
-        id: user.uid,
-        email: user.email!,
+        ...record,
         sessionCookie: sessionCookie,
-        ...getDecodedDisplayName(user.displayName!),
       };
     } catch (error) {
       throw handleError(error as AuthError);
@@ -188,19 +188,6 @@ const handleError = ({ message, code }: AuthError) => {
     throw new HttpsError('already-exists', message, { id: 'auth/email-already-exists' });
   }
   throw new HttpsError('internal', message, { id: code });
-};
-
-export const getEncodedDisplayName = (name: string, meetingId = ''): string =>
-  name + ';' + meetingId;
-
-export const getDecodedDisplayName = (
-  displayName: string
-): { name: string; guestOf: string | null } => {
-  const [name, guestOf] = displayName.split(';');
-  if (guestOf === '') {
-    return { name, guestOf: null };
-  }
-  return { name, guestOf };
 };
 
 export const getGuestEmail = (meetingId: string, username: string): string =>
