@@ -22,6 +22,19 @@ export class Repo<T extends Identifiable> {
   }
 
   async populate(ids: string[]): Promise<T[]> {
+    const results: T[] = [];
+    for (let i = 0; i < ids.length; i += 10) {
+      const batchIds = ids.slice(i, i + 10);
+      const populatedBatch = await this.populateBatch(batchIds);
+      results.push(...populatedBatch);
+    }
+    return results;
+  }
+
+  async populateBatch(ids: string[]): Promise<T[]> {
+    if (ids.length > 10) {
+      throw new Error('too many ids to populate');
+    }
     if (ids.length === 0) {
       return [];
     }
