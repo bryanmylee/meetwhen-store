@@ -14,7 +14,7 @@
     "serve": "run-s build dev:serve",
     "shell": "run-s build dev:shell",
     "start": "run-s shell",
-    "deploy": "npm run build && firebase deploy --only functions",
+    "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
   "engines": {
