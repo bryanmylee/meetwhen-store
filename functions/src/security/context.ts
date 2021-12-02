@@ -22,6 +22,7 @@ export const context: ContextFunction<ExpressContext, unknown> = async ({ req, r
       email: decodedIdToken.email!,
       name: decodedIdToken.name!,
       guestOf: decodedIdToken.guestOf,
+      hasPassword: true,
     };
     return { req, res, principal } as Context;
   } catch (error) {

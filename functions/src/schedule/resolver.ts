@@ -43,6 +43,12 @@ class ScheduleInput {
   intervals: IntervalInput[];
 }
 
+@InputType()
+class NoPassScheduleInput extends ScheduleInput {
+  @Field(() => ID)
+  userId: string;
+}
+
 @ArgsType()
 class DeleteScheduleArgs {
   @Field(() => ID)
@@ -91,6 +97,17 @@ export class ScheduleResolver implements ResolverInterface<Schedule> {
       meetingId,
       intervals,
       userId: principal!.id,
+    })) as Schedule;
+  }
+
+  @Mutation(() => Schedule)
+  async addNoPassSchedule(
+    @Arg('data') { meetingId, userId, intervals }: NoPassScheduleInput
+  ): Promise<Schedule> {
+    return (await this.scheduleService.addSchedule({
+      meetingId,
+      intervals,
+      userId,
     })) as Schedule;
   }
 

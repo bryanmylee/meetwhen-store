@@ -24,11 +24,7 @@ class EditArgs {
 }
 
 @Service()
-export class UserRepo extends Repo<UserShallow> {
-  constructor() {
-    super('no-pass-user');
-  }
-
+export class UserRepo {
   async findById(id: string): Promise<UserShallow> {
     const record = await firebaseAdmin.auth().getUser(id);
     return {

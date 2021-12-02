@@ -152,7 +152,7 @@ export class UserResolver {
     @Ctx('res') res: Response
   ): Promise<UserShallow> {
     const user = await this.userService.addNewGuest(data);
-    if (data.password !== undefined && user.hasPassword) {
+    if (data.password !== undefined && data.password !== '' && user.hasPassword) {
       return this.login({ email: user.email, password: data.password }, res);
     }
     return user;

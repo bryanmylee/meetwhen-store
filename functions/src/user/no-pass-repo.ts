@@ -20,6 +20,17 @@ export class NoPassUserRepo extends Repo<UserShallow> {
     super('no-pass-user');
   }
 
+  async findById(id: string): Promise<UserShallow> {
+    const { guestOf, name } = await super.findById(id);
+    return {
+      id,
+      name,
+      email: getGuestEmail(guestOf!, name),
+      guestOf,
+      hasPassword: false,
+    };
+  }
+
   async meetingIdUsernameExists(meetingId: string, username: string): Promise<boolean> {
     const results = await this.repo
       .where('guestOf', '==', meetingId)

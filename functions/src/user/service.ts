@@ -50,9 +50,9 @@ export class UserService {
 
   async findById(id: string): Promise<UserShallow> {
     try {
-      return this.repo.findById(id);
+      return await this.repo.findById(id);
     } catch (error) {
-      return this.noPassRepo.findById(id);
+      return await this.noPassRepo.findById(id);
     }
   }
 
@@ -72,7 +72,7 @@ export class UserService {
       throw new HttpsError('invalid-argument', 'only alphanumeric characters allowed for name');
     }
     try {
-      if (password !== undefined) {
+      if (password !== undefined && password !== '') {
         return this.repo.addNewGuest({ username, password, meetingId });
       }
       return this.noPassRepo.addNewGuest({ username, meetingId });
