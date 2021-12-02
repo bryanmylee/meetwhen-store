@@ -2,6 +2,7 @@ lockfileVersion: 5.3
 
 specifiers:
   '@types/cookie-parser': ^1.4.2
+  '@types/validator': ^13.7.0
   '@typescript-eslint/eslint-plugin': ^3.9.1
   '@typescript-eslint/parser': ^3.8.0
   apollo-server-core: ^2.24.0
@@ -45,6 +46,7 @@ dependencies:
 
 devDependencies:
   '@types/cookie-parser': 1.4.2
+  '@types/validator': 13.7.0
   '@typescript-eslint/eslint-plugin': 3.10.1_5182e8aac36775dd3927fc5148d54ea0
   '@typescript-eslint/parser': 3.10.1_eslint@7.26.0+typescript@3.9.9
   eslint: 7.26.0
@@ -907,6 +909,10 @@ packages:
   /@types/validator/13.1.3:
     resolution: {integrity: sha512-DaOWN1zf7j+8nHhqXhIgNmS+ltAC53NXqGxYuBhWqWgqolRhddKzfZU814lkHQSTG0IUfQxU7Cg0gb8fFWo2mA==}
     dev: false
+
+  /@types/validator/13.7.0:
+    resolution: {integrity: sha512-+jBxVvXVuggZOrm04NR8z+5+bgoW4VZyLzUO+hmPPW1mVFL/HaitLAkizfv4yg9TbG8lkfHWVMQ11yDqrVVCzA==}
+    dev: true
 
   /@types/ws/7.4.4:
     resolution: {integrity: sha512-d/7W23JAXPodQNbOZNXvl2K+bqAQrCMwlh/nuQsPSQk6Fq0opHoPrUw43aHsvSbIiQPr8Of2hkFbnz1XBFVyZQ==}
