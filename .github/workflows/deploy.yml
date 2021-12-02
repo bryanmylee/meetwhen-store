@@ -12,17 +12,17 @@ jobs:
       run:
         working-directory: ./functions
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@master
-    - name: Install dependencies
-      run: npm install
-    - name: Build
-      run: npm run build
-    - name: Archive production artifact
-      uses: actions/upload-artifact@master
-      with:
-        name: dist
-        path: functions/lib
+      - name: Checkout repo
+        uses: actions/checkout@master
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Archive production artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: dist
+          path: functions/lib
   deploy:
     name: Deploy
     needs: build
@@ -33,6 +33,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@master
+      - name: Install development dependencies
+        run: npm install --only=dev
       - name: Download artifact
         uses: actions/download-artifact@master
         with:
@@ -44,4 +46,3 @@ jobs:
           args: deploy --only functions
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          
