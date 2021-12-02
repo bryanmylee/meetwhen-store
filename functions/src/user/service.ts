@@ -81,7 +81,7 @@ export class UserService {
     }
   }
 
-  async hasPassword(id: string): Promise<boolean> {
+  async idHasPassword(id: string): Promise<boolean> {
     try {
       await this.repo.findById(id);
       return true;
@@ -91,7 +91,7 @@ export class UserService {
   }
 
   async editById({ id, email, name, password }: EditArgs): Promise<UserShallow> {
-    if (!(await this.hasPassword(id))) {
+    if (!(await this.idHasPassword(id))) {
       throw new HttpsError('permission-denied', 'cannot edit user without password', {
         id: 'auth/no-pass-user-edit',
       });
@@ -105,7 +105,7 @@ export class UserService {
 
   async deleteById(id: string, response: Response): Promise<void> {
     try {
-      if (await this.hasPassword(id)) {
+      if (await this.idHasPassword(id)) {
         await this.repo.deleteById(id);
       } else {
         await this.noPassRepo.deleteById(id);
