@@ -1,8 +1,7 @@
-import { Repo } from '../firebase/repo';
 import { Service } from 'typedi';
-import { UserShallow } from './types';
 import { firebaseAdmin } from '../firebase/setup';
 import { getGuestEmail } from './service';
+import { UserShallow } from './types';
 
 class AddNewArgs {
   name: string;

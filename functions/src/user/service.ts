@@ -1,9 +1,9 @@
 import { Response } from 'express';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { AuthError, signInWithEmailAndPassword } from 'firebase/auth';
-import { firebaseAdmin } from '../firebase/setup';
 import { Inject, Service } from 'typedi';
 import { auth } from '../firebase/auth';
+import { firebaseAdmin } from '../firebase/setup';
 import { NoPassUserRepo } from './no-pass-repo';
 import { UserRepo } from './repo';
 import { UserShallow } from './types';
