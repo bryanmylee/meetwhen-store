@@ -1,5 +1,5 @@
 {
-  "name": "functions",
+  "name": "meetwhen-store",
   "scripts": {
     "dev:build": "tsc -w",
     "dev:serve": "firebase emulators:start",
