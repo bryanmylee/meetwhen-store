@@ -13,6 +13,9 @@ export class UserShallow extends Identifiable {
 
   @Field(() => String, { nullable: true })
   guestOf: string | null = null;
+
+  @Field(() => Boolean)
+  hasPassword = true;
 }
 
 @ObjectType()

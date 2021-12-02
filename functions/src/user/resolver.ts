@@ -41,8 +41,8 @@ class AddGuestUserInput {
   @Field()
   username: string;
 
-  @Field()
-  password: string;
+  @Field({ nullable: true })
+  password?: string;
 
   @Field()
   meetingId: string;
@@ -152,7 +152,10 @@ export class UserResolver {
     @Ctx('res') res: Response
   ): Promise<UserShallow> {
     const user = await this.userService.addNewGuest(data);
-    return this.login({ email: user.email, password: data.password }, res);
+    if (data.password !== undefined && user.hasPassword) {
+      return this.login({ email: user.email, password: data.password }, res);
+    }
+    return user;
   }
 
   @Mutation(() => User)
@@ -161,7 +164,7 @@ export class UserResolver {
     @Arg('data') data: EditUserInput,
     @Ctx('principal') principal: Principal
   ): Promise<UserShallow> {
-    return this.userService.edit({ id: principal!.id, ...data });
+    return this.userService.editById({ id: principal!.id, ...data });
   }
 
   @Mutation(() => User)

@@ -1,9 +1,11 @@
 import { Response } from 'express';
 import { HttpsError } from 'firebase-functions/lib/providers/https';
 import { AuthError, signInWithEmailAndPassword } from 'firebase/auth';
-import { Service } from 'typedi';
-import { auth } from '../firebase/auth';
 import { firebaseAdmin } from '../firebase/setup';
+import { Inject, Service } from 'typedi';
+import { auth } from '../firebase/auth';
+import { NoPassUserRepo } from './no-pass-repo';
+import { UserRepo } from './repo';
 import { UserShallow } from './types';
 
 class AddNewArgs {
@@ -15,7 +17,7 @@ class AddNewArgs {
 class AddNewGuestArgs {
   meetingId: string;
   username: string;
-  password: string;
+  password?: string;
 }
 
 class EditArgs {
@@ -40,17 +42,17 @@ const SESSION_COOKIE_HEADER = '__access-token';
 
 @Service()
 export class UserService {
+  @Inject()
+  private repo: UserRepo;
+
+  @Inject()
+  private noPassRepo: NoPassUserRepo;
+
   async findById(id: string): Promise<UserShallow> {
     try {
-      const record = await firebaseAdmin.auth().getUser(id);
-      return {
-        id: record.uid,
-        email: record.email!,
-        name: record.displayName!,
-        guestOf: record.customClaims?.guestOf,
-      };
+      return this.repo.findById(id);
     } catch (error) {
-      throw handleError(error as AuthError);
+      return this.noPassRepo.findById(id);
     }
   }
 
@@ -59,20 +61,7 @@ export class UserService {
       throw new HttpsError('invalid-argument', 'only alphanumeric characters allowed for name');
     }
     try {
-      const record = await firebaseAdmin.auth().createUser({
-        displayName: name,
-        email,
-        password: password,
-      });
-      firebaseAdmin.auth().setCustomUserClaims(record.uid, {
-        guestOf: null,
-      });
-      return {
-        id: record.uid,
-        email,
-        name,
-        guestOf: null,
-      };
+      return this.repo.addNew({ name, email, password });
     } catch (error) {
       throw handleError(error as AuthError);
     }
@@ -83,38 +72,32 @@ export class UserService {
       throw new HttpsError('invalid-argument', 'only alphanumeric characters allowed for name');
     }
     try {
-      const record = await firebaseAdmin.auth().createUser({
-        displayName: username,
-        email: getGuestEmail(meetingId, username),
-        password: password,
-      });
-      firebaseAdmin.auth().setCustomUserClaims(record.uid, {
-        guestOf: meetingId,
-      });
-      return {
-        id: record.uid,
-        email: record.email!,
-        name: username,
-        guestOf: meetingId,
-      };
+      if (password !== undefined) {
+        return this.repo.addNewGuest({ username, password, meetingId });
+      }
+      return this.noPassRepo.addNewGuest({ username, meetingId });
     } catch (error) {
       throw handleError(error as AuthError);
     }
   }
 
-  async edit({ id, ...args }: EditArgs): Promise<UserShallow> {
+  async hasPassword(id: string): Promise<boolean> {
     try {
-      const record = await firebaseAdmin.auth().updateUser(id, {
-        email: args.email,
-        displayName: args.name,
-        password: args.password,
+      await this.repo.findById(id);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async editById({ id, email, name, password }: EditArgs): Promise<UserShallow> {
+    if (!(await this.hasPassword(id))) {
+      throw new HttpsError('permission-denied', 'cannot edit user without password', {
+        id: 'auth/no-pass-user-edit',
       });
-      return {
-        id: record.uid,
-        email: record.email!,
-        name: record.displayName!,
-        guestOf: record.customClaims?.guestOf,
-      };
+    }
+    try {
+      return this.repo.edit({ id, email, name, password });
     } catch (error) {
       throw handleError(error as AuthError);
     }
@@ -122,7 +105,11 @@ export class UserService {
 
   async deleteById(id: string, response: Response): Promise<void> {
     try {
-      await firebaseAdmin.auth().deleteUser(id);
+      if (await this.hasPassword(id)) {
+        await this.repo.deleteById(id);
+      } else {
+        await this.noPassRepo.deleteById(id);
+      }
       await this.logout(response);
     } catch (error) {
       throw handleError(error as AuthError);

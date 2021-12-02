@@ -21,6 +21,11 @@ export class Repo<T extends Identifiable> {
     return { ...data, id } as T;
   }
 
+  async deleteById(id: string): Promise<void> {
+    const ref = this.repo.doc(id);
+    await ref.delete();
+  }
+
   async populate(ids: string[]): Promise<T[]> {
     const results: T[] = [];
     for (let i = 0; i < ids.length; i += 10) {
