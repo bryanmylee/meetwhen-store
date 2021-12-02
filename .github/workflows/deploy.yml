@@ -21,8 +21,8 @@ jobs:
     - name: Archive production artifact
       uses: actions/upload-artifact@master
       with:
-        name: lib
-        path: lib
+        name: dist
+        path: functions/lib
   deploy:
     name: Deploy
     needs: build
@@ -36,8 +36,8 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@master
         with:
-          name: lib
-          path: lib
+          name: dist
+          path: functions/lib
       - name: Deploy cloud function
         uses: w9jds/firebase-action@master
         with:
