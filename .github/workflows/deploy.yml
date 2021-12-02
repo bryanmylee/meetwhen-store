@@ -1,0 +1,47 @@
+name: Deploy cloud function
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on: workflow_dispatch
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./functions
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@master
+    - name: Install dependencies
+      run: npm install
+    - name: Build
+      run: npm run build
+    - name: Archive production artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: lib
+        path: lib
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./functions
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+      - name: Download artifact
+        uses: actions/download-artifact@master
+        with:
+          name: lib
+          path: lib
+      - name: Deploy cloud function
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only functions
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          
