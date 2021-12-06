@@ -1,8 +1,8 @@
 # meetwhen-store
 
-The data store for all [meetwhen.io](https://meetwhen.io) events.
-
 ![deploy](https://github.com/bryanmylee/meetwhen-store/actions/workflows/deploy.yml/badge.svg)
+
+The data store for all [meetwhen.io](https://meetwhen.io) events.
 
 ## Developing
 
