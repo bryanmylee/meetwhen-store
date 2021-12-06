@@ -1,4 +1,10 @@
-# Developing
+# meetwhen-store
+
+The data store for all [meetwhen.io](https://meetwhen.io) events.
+
+![deploy](https://github.com/bryanmylee/meetwhen-store/actions/workflows/deploy.yml/badge.svg)
+
+## Developing
 
 Install `firebase-tools` with:
 
@@ -10,21 +16,21 @@ Then, the local emulator can be started with `firebase emulators:start`. For con
 
 The local endpoint is available at `http://localhost:5001/meetwhen-store/asia-east2/api/graphql`.
 
-# Deploying
+## Deploying
 
-To deploy, use `npm run deploy` from within `functions/`.
+To deploy, use `npm run deploy` from within `functions/` or run the Github action.
 
 The deployed endpoint is available at `https://asia-east2-meetwhen-store.cloudfunctions.net/api/graphql`.
 
-# Organization
+## Organization
 
-## Project structure
+### Project structure
 
 `functions/src/index.ts` serves as the entrypoint for the application.
 
 Source files are grouped by concerns e.g. for the `User` concern, the type definitions, service, repository, and resolver are stored together under `functions/src/user/`.
 
-## Types
+### Types
 
 Class and interface names follow a certain convention for readability. Given the `Meeting` concern:
 
